@@ -1,0 +1,9 @@
+default:
+  'datasets':
+    - '/space/grp/mbelmadani/worms/dat_files/raw_asd'
+    - '/space/grp/mbelmadani/worms/rev_files/Raw Autism Data Organized by Gene/'
+    - '/cosmos/data/project-data/mbelmadani_worm-phenomics-ASD/worms_2018-10-24/raw_asd'
+  'experiment.days': '/cosmos/data/project-data/mbelmadani_worm-phenomics-ASD/scripts/experiment.days.perPlate'
+  'morphological-features': 'res/morphological_features.csv'
+  'stimuli-features': 'res/stimuli_features.csv'
+
