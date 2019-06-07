@@ -1,8 +1,8 @@
 source("preprocessing_scripts/utils.R")
 
 # Load morphological dataset
-morphologicalDF <- read.table( paste0(here::here(), "/datasets/morphologicalDF.tsv"), header=T, row.names=1)
-stimuliDF <- read.table( paste0(here::here(), "/datasets/stimuliDF.tsv"), header=T)
+morphologicalDF <- read.table( paste0(config::get("data"), "morphologicalDF.tsv"), header=T, row.names=1)
+stimuliDF <- read.table( paste0(config::get("data"), "stimuliDF.tsv"), header=T)
 
 stimEnd <- 900 # Recommendation, last stim is about at 890 and then 300s later for spontaneous recovery.
 stimStart <- min(stimuliDF$time) # When did the first tap start?
