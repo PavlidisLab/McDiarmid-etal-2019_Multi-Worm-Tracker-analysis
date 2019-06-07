@@ -1,9 +1,10 @@
 install.packages("config")
 install.packages("here")
+install.packages("reshape2")
+
 install.packages("dplyr")
 install.packages("xtable")
 install.packages("ggplot2")
-install.packages("reshape2")
 install.packages("pvclust")
 install.packages("pdist")
 install.packages("devtools")

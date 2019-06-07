@@ -45,13 +45,10 @@ vignettes/*.pdf
 *~
 
 ## Data directories
-dat_files/
-rev_files/
-NAll_dat_files/
-data/
-plots/
-analysis/data/
-analysis/sandbox/
+processed_data/
+pvclust_plots/
+raw_data/
+tsne_plots/
 
 ## Text data files
 *.csv

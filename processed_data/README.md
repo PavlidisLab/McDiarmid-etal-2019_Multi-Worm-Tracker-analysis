@@ -1,0 +1,1 @@
+Files in the `datasets/` directory are processed raw data for downstream analysis.

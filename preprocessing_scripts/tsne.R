@@ -1,0 +1,175 @@
+library(here)
+setwd( here::here() )
+source("preprocessing_scripts/utils.R")
+
+## Load data
+wormData.feature.mtrx <- readMatrix(paste0(config::get("data"),"wormData.feature.mtrx"))
+t.stat <- readObjectAsMatrix("t.stat")
+isWT.replicate <- grepl("^N2.", cleanAlleleNames(t.stat))
+t.stat <- t.stat[!isWT.replicate,]
+t.stat["N2",] <- 0.0
+
+## Obtain feature groups
+features.reversals <- colnames(readObjectAsMatrix("reversals"))
+features.morphological <- setdiff( colnames(wormData.feature.mtrx), features.reversals )
+
+## Load clusters
+all.clusters.df <- readObjectAsTable("t.test.all.clusters.df")
+reversal.clusters.df <- readObjectAsTable("t.test.reversal.clusters.df")
+morpho.clusters.df <- readObjectAsTable("t.test.morpho.clusters.df")
+learning.clusters.df <- readObjectAsTable("t.test.learning.clusters.df")
+
+# cluster.string <- "ASD"
+cluster.string <- "learning"
+# cluster.string <- "reversal"
+# cluster.string <- "morphological"
+
+switch(cluster.string, 
+       "all"={
+         print("Using all features clusters")
+         cluster <- all.clusters.df
+         cluster.type <- T
+       },
+       "ASD"={
+         print("Using all (ASD) features clusters")
+         cluster <- all.clusters.df
+         cluster.type <- T
+       },
+       "reversal"={
+         print("Using reversal features clusters")
+         cluster.type <- features.reversals
+         cluster <- reversal.clusters.df
+         
+       },
+       "morphological"={
+         print("Using morpho features clusters")
+         cluster <- morpho.clusters.df
+         cluster.type <- features.morphological  
+       },
+       "learning"={
+         print("Using learning features clusters")
+         cluster <- learning.clusters.df
+         cluster.type <- LEARNING_FEATURES  
+       },
+       {
+         print("Using all features clusters")
+         cluster <- all.clusters.df
+         cluster.type <- T
+       }
+)
+
+# cluster <- rbind(cluster, data.frame(group=c("None"), gene=setdiff(rownames(t.stat), cluster$gene)))
+cluster <- rbind(cluster, data.frame(group=c("Wildtype"), gene=c("N2")))
+
+set.seed(config::get("tsne")$seed)
+THETA <- config::get("tsne")$theta
+PERPLEXITY <- config::get("tsne")$perplexity
+PCA=as.logical( config::get("tsne")$pca )
+
+DIMS=2
+tsne_out <- Rtsne(dist(t.stat[,cluster.type]),
+                  is_distance = T,
+                  pca=PCA,
+                  dims = DIMS,
+                  theta = THETA,
+                  perplexity = PERPLEXITY )
+
+DIMS=3
+tsne_out.3d <- Rtsne(dist(t.stat[,cluster.type]),
+                     is_distance = T,
+                     pca=PCA,
+                     dims = DIMS,
+                     theta = THETA,
+                     perplexity = PERPLEXITY )
+
+tsne_Y <- tsne_out$Y
+tsne_Y.3d <- as.data.frame(tsne_out.3d$Y)
+rownames(tsne_Y.3d) <- rownames(t.stat)
+
+colnames(tsne_Y) <- c("x", "y")
+colnames(tsne_Y.3d) <- c("x", "y","z")
+row.names(tsne_Y) <- row.names(t.stat)
+row.names(tsne_Y.3d) <- row.names(t.stat)
+
+tsne_Y <- cbind(tsne_Y, genes=row.names(t.stat))
+tsne_Y <- merge(tsne_Y, cluster, by.x="genes", by.y="gene", all.x=T)[,c("x","y","group","genes") ]
+
+colourScheme <- getColoursForClass(as.vector(tsne_Y[,"group"]))
+colourScheme.unique <- unique(as.character(colourScheme))
+names(colourScheme.unique) <- levels(as.factor(tsne_Y[,"group"]))
+
+colScale <- scale_colour_manual(name = "Cluster",values = colourScheme.unique)
+colScaleFill <-  scale_fill_manual(name="Class", values = colourScheme.unique)
+tsne_Y.3d$colours <- colourScheme.unique[(as.numeric(tsne_Y[,"group"]))] 
+tsne_Y.3d$colours <- colourScheme
+
+repel <- geom_label_repel(aes( x=x, y=y, label = tsne_Y$genes), fill = 'white')
+
+colourScheme.bind <- cbind(colourScheme, group=tsne_Y[,"group"])[,1:2]
+map_table <- unique(colourScheme.bind)
+
+GGMARGIN = 7
+XMAX = max((as.numeric(tsne_Y$x))) + GGMARGIN
+XMIN = min((as.numeric(tsne_Y$x))) - GGMARGIN
+
+YMAX = max((as.numeric(tsne_Y$y))) + GGMARGIN
+YMIN = min((as.numeric(tsne_Y$y))) - GGMARGIN
+
+tsne_Y.ASD = tsne_Y
+tsne_Y.ASD$group = as.character(tsne_Y.ASD$group)
+tsne_Y.ASD$group[is.na(tsne_Y.ASD$group) | tsne_Y.ASD$group != "Wildtype"] <- "ASD"
+tsne_Y.ASD$group = as.factor(tsne_Y.ASD$group)
+
+colourScheme.unique.ASD = c("dodgerblue2", "black")
+names(colourScheme.unique.ASD) <- c("ASD", "Wildtype")
+colScaleFill.ASD <-  scale_fill_manual(name="Class", values = colourScheme.unique.ASD)
+
+
+cairo_pdf(filename = paste0(config::get("tsne")$`output-directory`,"2D-tSNE.ASD.pdf"), onefile = T, width = 11, height = 8.5)
+p <- ggplot(tsne_Y.ASD) + 
+  theme_classic() +
+  TITLE_SIZES +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+  labs(title= paste("t-SNE of t-test values for", cluster.string, "genes") , 
+       subtitle= "", 
+       x = "x", 
+       y = "y")  +
+  geom_point(aes(x=as.numeric(x), 
+                 y=as.numeric(y), 
+                 fill=group), colour='black', stroke=1.0, size=DEFAULT_PT_SIZE, shape=21) + 
+  xlim(XMIN, XMAX) + ylim(YMIN, YMAX) + 
+  colScaleFill.ASD
+
+p
+p + ggrepel::geom_label_repel(aes(x=as.numeric(x), 
+                                y=as.numeric(y),
+                                label=tsne_Y.ASD$genes))
+
+dev.off()
+
+tsne_Y.3d$colours = "dodgerblue2"
+tsne_Y.3d$colours[rownames(tsne_Y.3d) == "N2"] = 'black'
+
+# scatter3D(tsne_Y.3d[,1], tsne_Y.3d[,2], tsne_Y.3d[,3], 
+#           col=tsne_Y.3d$colours, 
+#           phi = 0, bty = "g",  type = "h", 
+#           ticktype = "detailed", pch = 19, cex = 0.5)
+
+cairo_pdf(filename = paste0(config::get("tsne")$`output-directory`,"3D-Tsn.ASD.pdf"), onefile = T)
+for (i in c(-30, 0, 10, 30)){
+  for (j in c(-30, 0, 10, 30)){}
+  scatter3D(tsne_Y.3d[,1], tsne_Y.3d[,2], tsne_Y.3d[,3], 
+            col=tsne_Y.3d$colours, 
+            phi = i, bty = "g", 
+            theta = j,
+            pch = 20, cex = 2, ticktype = "detailed")
+  
+}
+dev.off()
+
+

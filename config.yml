@@ -4,6 +4,98 @@ default:
     - '/space/grp/mbelmadani/worms/rev_files/Raw Autism Data Organized by Gene/'
     - '/cosmos/data/project-data/mbelmadani_worm-phenomics-ASD/worms_2018-10-24/raw_asd'
   'experiment.days': '/cosmos/data/project-data/mbelmadani_worm-phenomics-ASD/scripts/experiment.days.perPlate'
-  'morphological-features': 'res/morphological_features.csv'
-  'stimuli-features': 'res/stimuli_features.csv'
+  'morphological-features': 'user_defined_feature_labels_and_categories/morphological_features.csv'
+  'stimuli-features': 'user_defined_feature_labels_and_categories/stimuli_features.csv'
+  'data': 'processed_data/'
+  'plots': 'pvclust_plots/'
+  'feature-subcategories': 'user_defined_feature_labels_and_categories/ASD_phenomics_feature_subcategories_0101_2019.tsv'
+  'feature-subcategories-labels': 'user_defined_feature_labels_and_categories/ASD_phenomics_feature_labels_subcategories_0101_2019.tsv'
+  'strain-genotype-labels': 'user_defined_feature_labels_and_categories/Strain_genotype_labels_withSource_1212_2018.tsv'
+  'clustering':
+    'ncpu': 30
+    'nboot': 50000
+    'alpha': 0.95
+    'seed': 0
+  'tsne':
+    'seed': 42
+    'theta': 0
+    'perplexity': 10
+    'pca': T
+    'output-directory': 'tsne_plots/'
+  'colors':
+      'baseline-locomotion': '#636363'
+      'morphology': '#000000'
+      'spontaneous-recovery_learning-retention': '#76b6f4'
+      'initial-sensitivity': '#1c86ee'
+      'habituation-learning': '#d1e6fb'
+      'gwb-scheme': 
+        - 'gray39'
+        - 'white'
+        - 'dodgerblue2'
+      'heatmap-scheme':
+        - 'dodgerblue2'
+        - 'black'
+        - 'yellow'
+  'constants':
+    'wildtypes': 
+      - "N2"
+      - "N2-10"
+      - "N2-3"
+      - "N2-4"
+      - "N2-6"
+      - "N2-7"
+      - "N2-8"
+      - "N2-9"
+      - "N2-5"
+      - "N2-2"
+      - "N2-11"
+      - "N2-12"
+      - "N2-13"
+      - "N2-14"
+      - "N2-15"
+      - "N2-16"
+      - "N2-17"
+    'featureset':
+      'computed':
+        - "probNR"
+        - "probSR"
+      'discrete':
+        - "plate"
+        - "line"
+        - "gene"
+        - "rowStimuli"
+        - "line.y"
+        - "gene.y"
+        - "number"
+        - "goodnumber"
+        - "time"
+        - "nWormAR"
+        - "nWormNR"
+        - "nWormSR"
+        - "probNR"
+        - "probSR"
+      'redundant':
+        - "DistSE"
+        - "Dist0Q"
+        - "Dist1Q"
+        - "Dist2Q"
+        - "Dist3Q"
+        - "DistTop1Pct"
+        - "DurationSE"
+        - "Duration0Q"
+        - "Duration1Q"
+        - "Duration2Q"
+        - "Duration3Q"
+        - "DurationTop1Pct"
+        - "ratioAR"
+        - "ratioNR"
+      'learning':
+        - "initRespPb"
+        - "initRespDuration"
+        - "initRespSpeed"
+        - "initRespDistance"
+        - "habituationPb"
+        - "habituationDuration"
+        - "habituationSpeed"
+        - "habituationDistance"
 

@@ -1,0 +1,27 @@
+Source	Label
+curve	Curve
+aspect	Aspect
+kink	Kink
+angular	Angular Speed
+crab	Crab 
+pathlen	Path Length
+spontSpeed	Spontaneous Recovery of Response Speed
+initRespSpeed	Initial Response Speed
+habituationSpeed	Habituation of Response Speed
+bias	Bias
+dir	Direction
+initRespDistance	Initial Response Distance
+speed	Baseline Speed
+habituationDistance	Habituation of Response Distance
+spontDuration	Spontaneous Recovery of Response Duration
+spontDistance	Spontaneous Recovery of Response Distance
+initRespPb	Initial Response Probability
+spontPb	Spontaneous Recovery of Response Probability
+habituationPb	Habituation of Response Probability
+initRespDuration	Initial Response Duration
+habituationDuration	Habituation of Response Duration
+length	Length
+midline	Midline Length
+width	Width
+morphwidth	Morphwidth
+area	Area

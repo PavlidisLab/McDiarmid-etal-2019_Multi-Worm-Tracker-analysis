@@ -1,0 +1,29 @@
+---
+title: "Supplementary Figure Collection 4 - Pvclust Dendrograms"
+output:
+  html_document: default
+  pdf_document: default
+subtitle: version 1.0
+---
+
+Dendrograms depict hierarchical clustering of strains based on similarity in their phenotypic profiles.  The Student's T-statistic was used as a numerical score to represent the difference between wild-type and mutant animals for each phenotypic feature; this created a numerical profile of phenotypic features for further analysis. Average-linkage hierarchical clustering was performed with pvclust using correlation as the distance measure, and 50,000 rounds of bootstrapping. Clustering was performed on all features as well as the morphology features only and sensory and learning features only. 
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(here)
+knitr::opts_knit$set(root.dir = here::here() )
+setwd(here::here())
+```
+
+## All features
+
+![](../../plots/t.test.pvclust_all.png)
+
+## Morphological features
+
+![](../../plots/t.test.pvclust_morpho.png)
+
+## Sensory and habituation learning features
+
+![](../../plots/t.test.pvclust_learning.png)

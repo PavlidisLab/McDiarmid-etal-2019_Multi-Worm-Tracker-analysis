@@ -1,0 +1,27 @@
+Feature	Class
+curve	Baseline Locomotion
+aspect	Baseline Locomotion
+kink	Baseline Locomotion
+angular	Baseline Locomotion
+crab	Baseline Locomotion
+pathlen	Baseline Locomotion
+spontSpeed	Spontaneous Recovery/Learning Retention
+initRespSpeed	Initial Sensitivity
+habituationSpeed	Habituation Learning
+bias	Baseline Locomotion
+dir	Baseline Locomotion
+initRespDistance	Initial Sensitivity
+speed	Baseline Locomotion
+habituationDistance	Habituation Learning
+spontDuration	Spontaneous Recovery/Learning Retention
+spontDistance	Spontaneous Recovery/Learning Retention
+initRespPb	Initial Sensitivity
+spontPb	Spontaneous Recovery/Learning Retention
+habituationPb	Habituation Learning
+initRespDuration	Initial Sensitivity
+habituationDuration	Habituation Learning
+length	Morphology
+midline	Morphology
+width	Morphology
+morphwidth	Morphology
+area	Morphology

@@ -1,0 +1,5 @@
+source("preprocessing_scripts/create_dataframe.R")
+source("preprocessing_scripts/process.R")
+source("preprocessing_scripts/t_test.R")
+source("preprocessing_scripts/clustering-t_stat.R")
+source("preprocessing_scripts/tsne.R")

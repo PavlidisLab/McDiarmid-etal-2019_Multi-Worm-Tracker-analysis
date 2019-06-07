@@ -1,0 +1,85 @@
+---
+title: "Supplementary Figure Collection 3 - Phenotypic Profiles"
+output:
+  html_document: default
+  pdf_document: default
+subtitle: version 1.0
+---
+
+For all plots bars represent directional t-statistics from an unpaired t-test comparing the indicated mutant to wild-type for each phenotypic feature listed across the x-axis. Color coding reflects feature classification.
+
+```{r setup, include=FALSE}
+# Rmd-specific settings
+library(here)
+require(knitr)
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = here::here())
+options(width = 1920)
+```
+
+```{r import, include=FALSE}
+# Load libraries
+source("preprocessing_scripts/utils.R")
+```
+
+```{r init, include=FALSE}
+# Load worm data
+wormData.feature.mtrx <- readMatrix( paste0(config::get("data"), "wormData.feature.mtrx"))
+t.stat <- readObjectAsMatrix("t.stat")
+isWT <- grepl("^N2", cleanAlleleNames(t.stat))
+t.stat <- t.stat[!isWT,]
+
+# Obtain feature groups
+features.reversals <- colnames(readObjectAsMatrix("reversals"))
+features.morphological <- setdiff( colnames(wormData.feature.mtrx), features.reversals )
+loadHeatmapFeatureColors(t.stat)
+
+colourBinary <- function(x){
+      # TODO do this outside of function
+      if ( x %in% features.morphological ) return("Morphological")
+      # ELSE
+      return("Reversal")  
+    }
+  
+class <- sapply(colnames(t.stat), colourBinary)  
+
+```
+
+## Phenotypic profiles  {.tabset}
+
+### Large format
+
+```{r strainBarPlots, echo=FALSE, fig.width=12, fig.height=12}
+
+index <- 1
+plotList <- list()
+for (strain in sort(rownames(t.stat)))  { 
+  ## Generate for all strains
+  p=tstatBarPerGene(t.stat = t.stat, strain = strain, class = class); 
+  print(p); 
+  plotList[[index]] <- p + theme( axis.text = element_blank(), axis.text.x = element_blank() )  + guides(fill=FALSE) + ylab("") + xlab("")  + ggtitle( strain )  + theme(plot.title = element_text(size = 16, face = "italic"))
+  index <- index + 1
+}
+
+```
+
+
+### Gridview
+
+```{r gridview, echo=FALSE, fig.width=12, fig.height=12}
+PERGRID=25
+MAXGRID=100
+COLNO=ceiling(sqrt(PERGRID))
+
+for ( index in (length(plotList)+1):MAXGRID ) {
+    plotList[[index]] <- ggplot() + theme_classic() ## Fill up grid with empty ggplot objects.
+}
+
+for ( i in 1:ceiling(nrow(t.stat)/PERGRID) ){
+  loBound = 1 + PERGRID * (i - 1)
+  upBound = PERGRID * i 
+
+  multiplot(plotlist = plotList[loBound:upBound], rows = COLNO )
+}
+```
