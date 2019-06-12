@@ -308,8 +308,3 @@ writeObject(wormData.plate.sc.mtrx)
 
 writeObject(wormData.plate.feature.mtrx)
 writeObject(wormData.plate.feature.sc.mtrx)
-
-# Additional stuff
-after <-  innerDF[innerDF$time >= stimStart & innerDF$time < stimEnd, ]
-after.cm <- applyColMeansByPlate(after)
-after.cm <- addClass(after.cm)

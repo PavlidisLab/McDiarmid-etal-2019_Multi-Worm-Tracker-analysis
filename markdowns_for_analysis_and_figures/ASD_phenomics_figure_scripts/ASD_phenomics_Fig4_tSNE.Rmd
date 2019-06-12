@@ -1,3 +1,22 @@
+---
+title: "t-SNE plots"
+output:
+  html_document: default
+  pdf_document: default
+subtitle: version 1.0
+---
+  
+```{r setup, include=FALSE}
+# Rmd-specific settings
+library(here)
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = here::here() )
+
+options(width = 1920)
+
+```
+
+```{r initialize, echo=FALSE, include=FALSE}
 library(here)
 setwd(here::here())
 source("preprocessing_scripts/utils.R")
@@ -148,13 +167,12 @@ names(colourScheme.unique.ASD) <- c("ASD", "Wildtype")
 colScaleFill.ASD <-
   scale_fill_manual(name = "Class", values = colourScheme.unique.ASD)
 
+```
 
-cairo_pdf(
-  filename = paste0(config::get("tsne")$`output-directory`, "2D-tSNE.ASD.pdf"),
-  onefile = T,
-  width = 9,
-  height = 5.5
-)
+## t-SNE scatterplots  {.tabset}
+
+### 2D
+```{r tSNE-2D, echo=FALSE, fig.width=12, fig.height=9}
 
 p <- ggplot(tsne_Y.ASD) +
   theme_classic() +
@@ -186,49 +204,24 @@ p <- ggplot(tsne_Y.ASD) +
   colScaleFill.ASD
 
 print(p)
-dev.off()
+```
 
-
-
-cairo_pdf(
-  filename = paste0(config::get("tsne")$`output-directory`, "2D-tSNE_ASD_labelled.pdf"),
-  onefile = T,
-  width = 19,
-  height = 11
-)
+### 2D (labelled)
+```{r tSNE-2D-labelled, echo=FALSE, fig.width=12, fig.height=9}
 p.labelled = p + ggrepel::geom_label_repel(aes(
   x = as.numeric(x),
   y = as.numeric(y),
   label = tsne_Y.ASD$genes
 ))
 print(p.labelled)
-dev.off()
+```
+
+### 3D
+```{r tSNE-3D, echo=FALSE, fig.width=12, fig.height=9}
 
 tsne_Y.3d$colours = "dodgerblue2"
 tsne_Y.3d$colours[rownames(tsne_Y.3d) == "N2"] = 'black'
-
-cairo_pdf(
-  filename = paste0(config::get("tsne")$`output-directory`, "3D-tSNE_ASD.pdf"),
-  onefile = T,
-  height = 12,
-  width = 12
-)
-scatter3D(
-  x = tsne_Y.3d[, 1],
-  y = tsne_Y.3d[, 2],
-  z = tsne_Y.3d[, 3],
-  col = "dodgerblue2", # N2 wild-type colored manually post-hoc.
-  phi = 0,
-  bty = "g",
-  theta = 30,
-  pch = 20,
-  cex = 2.75,
-  ticktype = "detailed"
-)
-dev.off()
-
-
-p <- plotly::plot_ly(
+plotly::plot_ly(
   tsne_Y.3d,
   x = tsne_Y.3d[, 1],
   y = tsne_Y.3d[, 2],
@@ -285,4 +278,6 @@ p <- plotly::plot_ly(
       )
     ) 
   )
-print(p)
+
+```
+
