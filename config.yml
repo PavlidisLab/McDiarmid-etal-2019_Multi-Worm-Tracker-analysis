@@ -7,7 +7,7 @@ default:
   'morphological-features': 'user_defined_feature_labels_and_categories/morphological_features.csv'
   'stimuli-features': 'user_defined_feature_labels_and_categories/stimuli_features.csv'
   'data': 'processed_data/'
-  'plots': 'pvclust_plots/'
+  'plots': 'plots/'
   'feature-subcategories': 'user_defined_feature_labels_and_categories/ASD_phenomics_feature_subcategories_0101_2019.tsv'
   'feature-subcategories-labels': 'user_defined_feature_labels_and_categories/ASD_phenomics_feature_labels_subcategories_0101_2019.tsv'
   'strain-genotype-labels': 'user_defined_feature_labels_and_categories/Strain_genotype_labels_withSource_1212_2018.tsv'
@@ -16,6 +16,7 @@ default:
     'nboot': 50000
     'alpha': 0.95
     'seed': 0
+    'plots': 'pvclust_plots/'
   'tsne':
     'seed': 42
     'theta': 0
