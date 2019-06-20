@@ -125,7 +125,11 @@ names(colourScheme.unique.ASD) <- c("ASD", "Wildtype")
 colScaleFill.ASD <-  scale_fill_manual(name="Class", values = colourScheme.unique.ASD)
 
 
-cairo_pdf(filename = paste0(config::get("tsne")$`output-directory`,"2D-tSNE.ASD.pdf"), onefile = T, width = 11, height = 8.5)
+cairo_pdf(filename = paste0(config::get("tsne")$`output-directory`,"2D-tSNE.ASD.pdf"),
+          onefile = T,
+          width = 11,
+          height = 8.5)
+
 p <- ggplot(tsne_Y.ASD) + 
   theme_classic() +
   TITLE_SIZES +
