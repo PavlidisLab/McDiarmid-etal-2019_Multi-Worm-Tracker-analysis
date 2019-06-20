@@ -60,7 +60,7 @@ pvplot(pv.genes.morpho, breaks=c(CONFIDENCE), filename = "t.test.pvclust_morpho.
 pvplot(pv.genes.reversals, breaks = c(CONFIDENCE), filename = "t.test.pvclust_reversals.png", HIGHLIGHT = days.melted) 
 pvplot(pv.genes.learning, breaks = c(CONFIDENCE), filename = "t.test.pvclust_learning.png", HIGHLIGHT = days.melted) 
 
-for (file in paste0("plots/", c("t.test.pvclust_all.png" , "t.test.pvclust_morpho.png" , "t.test.pvclust_reversals.png", "t.test.pvclust_learning.png")) ){
+for (file in paste0(config::get("clustering")$plots, c("t.test.pvclust_all.png" , "t.test.pvclust_morpho.png" , "t.test.pvclust_reversals.png", "t.test.pvclust_learning.png")) ){
   system( paste("convert -rotate 90 ", file, file))
 }
 

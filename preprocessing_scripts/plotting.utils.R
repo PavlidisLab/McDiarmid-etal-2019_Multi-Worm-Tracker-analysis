@@ -198,7 +198,7 @@ pvplot <-
            HIGHLIGHT_v = NULL) {
     
     if (is.null(path)){
-      path=config::get("plots")  
+      path=config::get("clustering")$plots  
     }
     
     if (is.null(HIGHLIGHT)) {
