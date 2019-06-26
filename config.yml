@@ -18,9 +18,10 @@ default:
     'seed': 0
     'plots': 'pvclust_plots/'
   'tsne':
-    'seed': 42
+    'seed2D': 77
+    'seed3D': 85
     'theta': 0
-    'perplexity': 10
+    'perplexity': 20
     'pca': T
     'output-directory': 'tsne_plots/'
   'colors':
