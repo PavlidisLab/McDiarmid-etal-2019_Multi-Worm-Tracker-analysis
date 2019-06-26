@@ -32,7 +32,7 @@ strainsPerSides=10 # To control overplotting, we're limiting the number of label
 # Import and Load
 source("preprocessing_scripts/utils.R")
 
-wormData.plate.feature.mtrx <- readMatrix("data/wormData.plate.feature.mtrx")
+wormData.plate.feature.mtrx <- readMatrix(paste0( config::get("data"), "/wormData.plate.feature.mtrx") )
 wormData.feature.mtrx.corrected <- (wormData.plate.feature.mtrx)
 isWT <- grepl("^N2", cleanAlleleNames(wormData.feature.mtrx.corrected))
 wormData.feature.sc.mtrx.corrected <- scaleCols(wormData.feature.mtrx.corrected)
