@@ -3,7 +3,7 @@ default:
     - 'datasets/part1_dat/'
     - 'datasets/part1_rev/'
     - 'datasets/part2/'
-  'experiment.days': '/cosmos/data/project-data/mbelmadani_worm-phenomics-ASD/scripts/experiment.days.perPlate'
+  'experiment.days': 'user_defined_feature_labels_and_categories/experiment.days.perPlate'
   'morphological-features': 'user_defined_feature_labels_and_categories/morphological_features.csv'
   'stimuli-features': 'user_defined_feature_labels_and_categories/stimuli_features.csv'
   'data': 'processed_data/'
