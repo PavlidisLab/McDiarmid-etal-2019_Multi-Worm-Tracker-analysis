@@ -1,0 +1,350 @@
+---
+title: "Reversal feature and plots"
+author: "Troy McDiarmid"
+date: "September 10, 2018"
+output: html_document
+---
+
+```{r}
+##Load in them libraries
+
+library(tidyverse)
+install.packages("extrafont")
+library(extrafont)
+font_import()
+
+```
+
+
+
+```{r setup, include=FALSE}
+
+##Bash loop to output reversals from tracker plates
+
+for folder in $( ls ); do Chore --segment --shadowless --pixelsize 0.027 --minimum-move-body 2 --minimum-time 20 --output speed,midline,morphwidth --plugin Reoutline::despike --plugin Respine --plugin MeasureReversal::tap::dt=1::collect=0.5  $folder; done
+
+##Bash argument to grep all .rev files into a summary of reversals
+
+grep -H '[.]*' $(find . -name '*.rev') > data.srev
+
+cd ../..
+
+```
+
+
+```{r}
+
+##Comand to read .srev file in 
+
+setwd("/Volumes/SAMWISE/Troy/ASD_Phenomics_pub_data/N2_VC676_DH1370_Doubles_0901_2018/data")
+
+rawsrev <- read_table2("data.srev", col_names = c("plate_id", "already_rev", "not_rev", "rev", "rev_dist", "dist_sd", "dist_sem", "dist_0_quart", "dist_1st_quart", "dist_2nd_quart", "dist_3rd_quart", "dsit_100th_percentile", "rev_dur", "dur_sd", "dur_sem", "dur_0_quart", "dur_1st_quart", "dur_2nd_quart", "dur_3rd_quart", "dur_100th_percentile"))
+
+cleanrawsrev <- rawsrev %>% 
+  separate(plate_id, into = c("garbage", "plate_id", "genotype"), sep ="/") %>% separate(genotype, into = c("genotype", "time"), sep = ":") %>% 
+  separate(genotype, into = c("genotype", "sync_conditions", "growth_conditions", sep = "_")) %>% 
+  select(plate_id:dur_100th_percentile) 
+
+##Optional Code to rename your factors
+
+cleanrawsrev$genotype <- factor(cleanrawsrev$genotype,
+    levels = c('N2', 'CB1375', 'VG712', 'VG817', 'VG818', 'VG867', 'DH1370', 'VC676', '62A', '126E', 'VC228', 'VG870', 'VG871', 'VG867b'), ordered = TRUE) 
+
+cleanrawsrev$genotype <- recode(cleanrawsrev$genotype, `N2` ="Wild-type", DH1370 = "rme-6", VC676 = "chd-7", `62A` = "rme-6;chd-7", `126E` = "rme-6;chd-7-B", `VC228` = "nlg-1", `VG870` = "nlg-1;chd-7", `VG871` = "nlg-1;chd-7-B", `CB1375` = "daf-18(e1375)", `VG712` = "CRISPR daf-18 KO", `VG817` = "CRISPR WT PTEN Rescue", `VG818` = "CRISPR WT PTEN Rescue 2", `VG867` = "CRISPR PTEN-G129E", `VG867b` = "CRISPR PTEN-G129E")
+
+##Make time numeric and round time 
+
+cleanrawsrev <- cleanrawsrev %>% mutate(time = as.numeric(time)) %>% 
+  mutate(time = round(time, digits = 0)) 
+
+##Calculate reversal probability
+
+cleanrawsrev <- cleanrawsrev %>% 
+  mutate(rev_prob = rev / (not_rev + rev)) 
+
+##Calculate reversal speed 
+
+cleanrawsrev <- cleanrawsrev %>%
+  mutate(rev_speed = rev_dist / rev_dur) 
+
+##Optional Code to remove any bad plate/s, NOTE: this will change depending on your experiment
+
+
+cleanrawsrev <- cleanrawsrev %>% 
+  filter(!plate_id %in% c("20181018_131356", "20181018_124933"))
+         
+
+##optional code to remove any bad observtions
+
+cleanrawsrev <- cleanrawsrev %>% 
+  filter(!(genotype == "CRISPR WT PTEN Rescue" & time == "759")) & plate_id == "20180901_154505")) 
+
+##Mean rev data
+
+mean_cleanrawsrev <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarize_all(mean) 
+
+
+##Add stim number NOTE: this must be changed to fit your experiment parameters 
+
+mean_cleanrawsrev$stimulus_num <- rep(1:31, times = 8) 
+
+##SD calcs
+
+prob_SD <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(prob_sd = sd(rev_prob))
+
+dur_SD <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(dur_sd = sd(rev_dur))
+
+speed_SD <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(speed_sd = sd(rev_speed))
+
+dist_SD <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(dist_sd = sd(rev_dist))
+
+
+##SEM calcs
+
+prob_SEM <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(prob_sem = sd(rev_prob)/sqrt(length(rev_prob)))
+
+dur_SEM <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(dur_sem = sd(rev_dur)/sqrt(length(rev_dur)))
+
+dist_SEM <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(dist_sem = sd(rev_dist)/sqrt(length(rev_dist)))
+
+speed_SEM <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(speed_sem = sd(rev_speed)/sqrt(length(rev_speed)))
+
+
+
+```
+
+
+
+```{r}
+
+final_rev_prob <- cleanrawsrev %>%
+  group_by(genotype, plate_id) %>%
+  filter(time %in% c(870:890)) %>% 
+  summarize(final_rev_prob = mean(rev_prob))
+
+final_rev_prob$genotype <- recode(final_rev_prob$genotype, `N2` ="Wild-type (N2)", DH1370 = "rme-6", VC676 = "chd-7", `62A` = "rme-6;chd-7", `126E` = "rme-6;chd-7-B", `VC228` = "nlg-1", `VG870` = "nlg-1;chd-7", `VG871` = "nlg-1;chd-7-B")
+
+
+##Plot of just the final level of nlg-1 chd-7 cross
+
+to_plot_final_level <- final_rev_prob %>% 
+  filter(genotype %in% c("Wild-type", "nlg-1", "chd-7", "nlg-1;chd-7", "nlg-1;chd-7-B"))
+
+prob_final_lev_plot <- ggplot(to_plot_final_level, aes(genotype, final_rev_prob, colour = genotype, fill = genotype)) +
+   geom_boxplot(lwd=1, fill = "white") +
+  geom_point(aes(shape=genotype), size = 3, stroke = 1.25) +
+  scale_fill_manual(values=c("black", "gray39", "white", "dodgerblue2", "dodgerblue2")) +
+  scale_shape_manual(values=c(16,16,21,21,21)) +
+  scale_color_manual(values=c("black", "gray39", "dodgerblue2", "gray39", "gray39")) +
+  labs(title = "", x = "", y = "Reversal probability") +
+  theme_classic() + 
+  theme(axis.line = element_line(colour = 'black', size = 1.5)) +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,1.0)) +
+  theme(axis.ticks = element_line(colour = "black", size = 1.5)) +
+   theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.ticks.x = element_line(colour = "black", size = 0)) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 20)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 20)) +
+  ggsave("nlg-1_chd7_final_level_epistasis.jpeg", width = 7, height = 5, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials")
+
+##Make plot of just rme-6 chd-7 cross
+
+to_plot_final_level <- final_rev_prob %>% 
+  filter(genotype %in% c("Wild-type", "rme-6", "chd-7", "rme-6;chd-7", "rme-6;chd-7-B"))
+
+prob_final_lev_plot <- ggplot(to_plot_final_level, aes(genotype, final_rev_prob, colour = genotype, fill = genotype)) +
+   geom_boxplot(lwd=1, fill = "white") +
+  geom_point(aes(shape=genotype), size = 3, stroke = 1.25) +
+  scale_fill_manual(values=c("black", "white", "gray39", "black", "black")) +
+  scale_shape_manual(values=c(16,21,16,21,21)) +
+  scale_color_manual(values=c("black", "gray39", "gray39", "gray39", "gray39")) +
+  labs(title = "", x = "", y = "Reversal probability") +
+  theme_classic() + 
+  theme(axis.line = element_line(colour = 'black', size = 1.5)) +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,1.0)) +
+  theme(axis.ticks = element_line(colour = "black", size = 1.5)) +
+   theme(axis.ticks.length= unit(.25, "cm")) +
+    theme(axis.ticks.x = element_line(colour = "black", size = 0)) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 20)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 20)) +
+  ggsave("rme-6_chd7_final_level_epistasis.jpeg", width = 7, height = 5, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials")
+
+
+##All groups on one plot
+
+
+final_rev_prob$genotype <- recode(final_rev_prob$genotype, `Wild-type` ="Wild-type (N2)", VC676 = "chd-7", `VC228` = "nlg-1", DH1370 = "rme-6", `rme-6;chd-7-B` = "rme-6;chd-7", `126E` = "rme-6;chd-7",  `nlg-1;chd-7-B` = "nlg-1;chd-7", `VG871` = "nlg-1;chd-7")
+
+to_plot_final_level <- final_rev_prob %>% 
+  filter(genotype %in% c("Wild-type (N2)", "chd-7", "nlg-1", "rme-6", "nlg-1;chd-7", "rme-6;chd-7"))
+
+to_plot_final_level$genotype <- factor(to_plot_final_level$genotype,
+    levels = c('Wild-type (N2)', 'rme-6', 'nlg-1', 'chd-7', 'rme-6;chd-7', 'nlg-1;chd-7'), ordered = TRUE) 
+
+prob_final_lev_plot <- ggplot(to_plot_final_level, aes(genotype, final_rev_prob, colour = genotype, fill = genotype)) +
+   geom_boxplot(lwd=1, fill = "white") +
+  geom_point(aes(shape=genotype), size = 3, stroke = 1.25) +
+  scale_fill_manual(values=c("black", "white", "white", "gray39", "black", "dodgerblue2")) +
+  scale_shape_manual(values=c(16,21,16,21,21,21)) +
+  scale_color_manual(values=c("black", "gray39", "dodgerblue2", "gray39", "gray39", "gray39")) +
+  labs(title = "", x = "", y = "Reversal probability") +
+  theme_classic() + 
+  theme(axis.line = element_line(colour = 'black', size = 1.5)) +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,1.0)) +
+  theme(axis.ticks = element_line(colour = "black", size = 1.5)) +
+   theme(axis.ticks.length= unit(.25, "cm")) +
+    theme(axis.ticks.x = element_line(colour = "black", size = 0)) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 20)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 20)) +
+  ggsave("all_groups_final_level_epistasis.jpeg", width = 9, height = 5.5, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials")
+
+```
+
+
+
+```{r}
+##Logistic regression analysis
+
+library(plyr)
+library(multcomp)
+library(binom)
+library(stringr)
+
+## load data into R (data.srev)
+
+data <- read.table("/Volumes/SAMWISE/Troy/ASD_Phenomics_pub_data/N2_VC676_DH1370_Doubles_0901_2018/data/data.srev", sep="", header = FALSE)
+
+## extract date information from first column (V1). Date is always 8 numeric characters.
+
+date <- str_extract(data$V1, "[0-9]{8}")
+
+## extract plate information from first column (V1). 
+
+plate <- str_extract(data$V1, "[0-9]{8}_[0-9]{6}")
+
+## extract strain information from first column (V1). 
+
+strain <- str_extract(data$V1,"[A-Za-z]+[-]?[0-9]?")
+
+## extract time information from first column (V1). 
+
+time <- str_extract(data$V1, "[0-9]+[.][0-9]+")
+
+## make time numeric
+time <- as.numeric(time)
+
+## round time to 1s
+time <- round(time, digits = 0)
+
+## make time a factor
+time <- as.factor(time)
+
+## combine new columns with merged file
+data <- cbind(date, plate, strain, time, data[,2:dim(data)[2]])
+
+##clean up the workspace
+rm(date, plate, strain, time)
+
+##name columns  
+colnames(data) <- c("date", "plate", "strain",  "time", "wrongway", "no_response", "rev",
+                    "dist_avg", "dist_std", "dist_sem", "dist_min", "dist_25th", "dist_median",
+                    "dist_75th", "dist_max", "dur_avg", "dur_std", "dur_sem", "dur_min", "dur_25th",
+                    "dur_median", "dur_75th", "dur_max")
+
+## make a data frame containing only the count data for probabilities
+data_prob <- data[,1:7]
+
+levels(data_prob$time) <- c("1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30")
+
+## make a list of the strains
+
+strain_list  <- unique(data$strain)
+
+## For each strain, calculate the number of worms respoding and the sample size,
+
+data_prob_aggregate <- ddply(data_prob, c("strain", "time"), summarise,
+                             reversal = sum(rev),
+                             N = sum(no_response + rev))
+
+data_prob_aggregate$time <- factor(c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30))
+
+## Calculate the proportion of worms responding
+
+data_prob_aggregate <- ddply(data_prob_aggregate, c("strain", "time"), transform, 
+                             rev_prob= (reversal / N))
+                             
+## make time numeric
+
+data_prob_aggregate$time <- factor(data_prob_aggregate$time)
+
+## take a look at the data
+
+head(data_prob_aggregate)
+
+## Calculate the 95% binomial confidence intervals for responding the stimulus
+## (Clopper-Pearson method)
+
+conf_int <- binom.confint(data_prob_aggregate$reversal, data_prob_aggregate$N, 
+                          methods = "exact")
+
+## Checkout the confidence intervals
+
+conf_int
+
+## Add these confidence intervals to the data frame
+
+data_prob_aggregate$conf_int_lower <- conf_int$lower
+data_prob_aggregate$conf_int_upper <- conf_int$upper
+
+## Checkout the data again
+
+head(data_prob_aggregate)
+
+## Do a logistic regression to test if there is a significant difference 
+## between habituated levels if there are multiple strains in the dataset
+
+## fit a logistic regression with reversal probility modeled against strain
+
+my_glm <- glm(rev_prob ~ strain, weights = N, family = binomial(link = "logit"), 
+                data = data_prob_aggregate)
+  
+## Get the logistic regression summary statistics
+
+summary(my_glm)
+  
+## perform a Tukey's HSD multiple comparison posthoc test
+
+glht_my_glm <- glht(my_glm, mcp(strain="Tukey"))
+  summary(glht_my_glm) 
+  
+## write stats to a text file
+
+my_tukey_summary <- capture.output(summary(glht_my_glm), file = NULL)
+write.table(my_tukey_summary, "/Volumes/SAMWISE/Troy/ASD_Phenomics_pub_data/N2_VC676_DH1370_Doubles_0901_2018/data/stats.csv")
+
+```
+
+
+
+

@@ -1,0 +1,173 @@
+---
+title: "Reversal feature and plots"
+author: "Troy McDiarmid"
+date: "September 10, 2018"
+output: html_document
+---
+
+```{r}
+##Load in them libraries
+
+library(tidyverse)
+install.packages("extrafont")
+library(extrafont)
+font_import()
+library(readxl)
+
+```
+
+
+
+```{r setup, include=FALSE}
+
+##Bash loop to output reversals from tracker plates
+
+for folder in $( ls ); do Chore --segment --shadowless --pixelsize 0.027 --minimum-move-body 2 --minimum-time 20 --output speed,midline,morphwidth --plugin Reoutline::despike --plugin Respine --plugin MeasureReversal::tap::dt=1::collect=0.5  $folder; done
+
+##Bash argument to grep all .rev files into a summary of reversals
+
+grep -H '[.]*' $(find . -name '*.rev') > data.srev
+
+cd ../..
+
+```
+
+
+```{r}
+
+##Command to read data files file in 
+
+setwd("/Volumes/SAMWISE/Troy/ASD_Phenomics_pub_data/Fig6_nlg_variants_additional_behav_assays_2019")
+
+#Spontaneous reversals
+
+rawrevcounts <- read_excel("/Volumes/SAMWISE/Troy/ASD_Phenomics_pub_data/Fig6_nlg_variants_additional_behav_assays_2019/NLG1_variant_reversals_0514_2019.xlsx", col_names = TRUE)
+
+rawrevcounts$genotype <- factor(rawrevcounts$genotype,
+    levels = c('N2', 'nlg1', 'R62W', 'V397M', 'R430C', 'R714C', ordered = TRUE))
+
+#Octonal chemotaxis
+
+chemotaxis <- read_excel("/Volumes/SAMWISE/Troy/ASD_Phenomics_pub_data/Fig6_nlg_variants_additional_behav_assays_2019/ASD_phenomics_NLGN_variant_oct_chemotaxis_0517_2019.xlsx", col_names = TRUE)
+
+chemotaxis$genotype <- factor(chemotaxis$genotype,
+    levels = c('N2', 'nlg1', 'R62W', 'V397M', 'R430C', 'R714C', ordered = TRUE))
+
+##Sensory integration
+
+sensory_integration <- read_excel("/Volumes/SAMWISE/Troy/ASD_Phenomics_pub_data/Fig6_nlg_variants_additional_behav_assays_2019/asd_phenomics_nlg_variant_sensory_integration_0521_2019.xlsx", col_names = TRUE)
+
+sensory_integration$genotype <- factor(chemotaxis$genotype,
+    levels = c('N2', 'nlg1', 'R62W', 'V397M', 'R430C', 'R714C', ordered = TRUE))
+
+##Thermotaxis
+
+thermotaxis <- read_excel("/Volumes/SAMWISE/Troy/ASD_Phenomics_pub_data/Fig6_nlg_variants_additional_behav_assays_2019/ASD_phenomics_nlg1_variants_thermotaxis_0521_2019.xlsx", col_names = TRUE)
+
+thermotaxis$genotype <- factor(chemotaxis$genotype,
+    levels = c('N2', 'nlg1', 'R62W', 'V397M', 'R430C', 'R714C', ordered = TRUE))
+
+```
+
+
+
+```{r}
+
+##Plot of reversal frequency of neuroligin missense variant lines  
+
+scaleFUN <- function(x) sprintf("%.2f", x)
+
+variant_rev_freq_plot <- ggplot(rawrevcounts, aes(genotype, rev_num, colour = genotype, fill = genotype)) +
+   geom_boxplot(lwd=1.5, fill = "white") +
+  geom_jitter(aes(shape=genotype), size = 2.5, stroke = 1.5, width = 0.2) +
+  scale_fill_manual(values=c("white", "dodgerblue2", "white", "white", "white", "white")) +
+  scale_shape_manual(values=c(21,16,21,21,21,21)) +
+  scale_color_manual(values=c("black", "dodgerblue2", "dodgerblue2", "dodgerblue2", "dodgerblue2", "dodgerblue2")) +
+  labs(title = "", x = "", y = "Reversal frequency") +
+  theme_classic() + 
+  theme(axis.line = element_line(colour = 'black', size = 2.25)) +
+  theme(legend.position = "none") +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,9.0), labels=scaleFUN) +
+  theme(axis.ticks = element_line(colour = "black", size = 2.25)) +
+  theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.ticks.x = element_line(colour = "black", size = 0)) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 30)) +
+  ggsave("nlg-1_variant_rev_freq.jpeg", width = 7, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials")
+
+##Plot of chemotaxis index of neuroligin missense variant lines
+
+scaleFUN <- function(x) sprintf("%.2f", x)
+
+variant_chemotaxis_plot <- ggplot(chemotaxis, aes(genotype, CI, colour = genotype, fill = genotype)) +
+   geom_boxplot(lwd=1.5, fill = "white") +
+  geom_point(aes(shape=genotype), size = 2.5, stroke = 1.5) +
+  scale_fill_manual(values=c("white", "dodgerblue2", "white", "white", "white", "white")) +
+  scale_shape_manual(values=c(21,16,21,21,21,21)) +
+  scale_color_manual(values=c("black", "dodgerblue2", "dodgerblue2", "dodgerblue2", "dodgerblue2", "dodgerblue2")) +
+  labs(title = "", x = "", y = "Chemotaxis index") +
+  theme_classic() + 
+  theme(axis.line = element_line(colour = 'black', size = 2.25)) +
+  theme(legend.position = "none") +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(-1.0, 0.2), labels=scaleFUN) +
+  theme(axis.ticks = element_line(colour = "black", size = 2.25)) +
+  theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.ticks.x = element_line(colour = "black", size = 0)) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 30)) +
+  ggsave("nlg-1_variant_chemotaxis.jpeg", width = 7, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials") 
+
+#Plot of sensory integration index of neuroligin missense variant lines
+
+scaleFUN <- function(x) sprintf("%.1f", x)
+
+variant_sensory_integration_plot <- ggplot(sensory_integration, aes(genotype, AA_index, colour = genotype, fill = genotype)) +
+   geom_boxplot(lwd=1.5, fill = "white") +
+  geom_point(aes(shape=genotype), size = 2.5, stroke = 1.5) +
+  scale_fill_manual(values=c("white", "dodgerblue2", "white", "white", "white", "white")) +
+  scale_shape_manual(values=c(21,16,21,21,21,21)) +
+  scale_color_manual(values=c("black", "dodgerblue2", "dodgerblue2", "dodgerblue2", "dodgerblue2", "dodgerblue2")) +
+  labs(title = "", x = "", y = "Sensory integration index (%)") +
+  theme_classic() + 
+  theme(axis.line = element_line(colour = 'black', size = 2.25)) +
+  theme(legend.position = "none") +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0, 60), labels=scaleFUN) +
+  theme(axis.ticks = element_line(colour = "black", size = 2.25)) +
+  theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.ticks.x = element_line(colour = "black", size = 0)) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 30)) +
+  ggsave("nlg-1_variant_sensory_integration.jpeg", width = 7, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials") 
+
+##Plot of 20 degree thermotaxis of neuroligin missense variant lines 
+
+scaleFUN <- function(x) sprintf("%.1f", x)
+
+thermotaxis_plot <- ggplot(thermotaxis, aes(genotype, thermotaxis_index, colour = genotype, fill = genotype)) +
+   geom_boxplot(lwd=1.5, fill = "white") +
+  geom_point(aes(shape=genotype), size = 2.5, stroke = 1.5) +
+  scale_fill_manual(values=c("white", "dodgerblue2", "white", "white", "white", "white")) +
+  scale_shape_manual(values=c(21,16,21,21,21,21)) +
+  scale_color_manual(values=c("black", "dodgerblue2", "dodgerblue2", "dodgerblue2", "dodgerblue2", "dodgerblue2")) +
+  labs(title = "", x = "", y = "20°C thermotaxis index") +
+  theme_classic() + 
+  theme(axis.line = element_line(colour = 'black', size = 2.25)) +
+  theme(legend.position = "none") +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0, 40), labels=scaleFUN) +
+  theme(axis.ticks = element_line(colour = "black", size = 2.25)) +
+  theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.ticks.x = element_line(colour = "black", size = 0)) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 30)) +
+  ggsave("nlg-1_variant_20℃_thermotaxis.jpeg", width = 7, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials") 
+
+```
+

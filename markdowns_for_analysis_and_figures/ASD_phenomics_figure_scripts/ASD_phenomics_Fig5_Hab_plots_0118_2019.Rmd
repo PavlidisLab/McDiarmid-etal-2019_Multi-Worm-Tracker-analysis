@@ -1,0 +1,374 @@
+---
+title: "Figure 5 Habituation"
+author: "Troy McDiarmid"
+date: "September 10, 2018"
+output: html_document
+---
+
+```{r}
+##Load in libraries
+
+library(tidyverse)
+
+```
+
+
+```{r setup, include=FALSE}
+
+##Bash loop to output reversals from tracker plates
+
+for folder in $( ls ); do Chore --segment --shadowless --pixelsize 0.027 --minimum-move-body 2 --minimum-time 20 --output speed,midline,morphwidth --plugin Reoutline::despike --plugin Respine --plugin MeasureReversal::tap::dt=1::collect=0.5  $folder; done
+
+##Bash argument to grep all .trv files into a summary of reversals
+
+grep -H '[.]*' $(find . -name '*.trv') > data.srev
+
+cd ../..
+
+```
+
+
+```{r}
+
+##Read in summary of reversal data file (data.srev) 
+
+setwd("/Users/troymcdiarmid/Desktop/ASD_Screen_materials/Pub_Figure_data/Troys_N2")
+
+screen_N2_rawsrev <- read_table2("data.srev", col_names = c("plate_id", "already_rev", "not_rev", "rev", "rev_dist", "dist_sd", "dist_sem", "dist_0_quart", "dist_1st_quart", "dist_2nd_quart", "dist_3rd_quart", "dsit_100th_percentile", "rev_dur", "dur_sd", "dur_sem", "dur_0_quart", "dur_1st_quart", "dur_2nd_quart", "dur_3rd_quart", "dur_100th_percentile"))
+
+screen_N2_cleanrawsrev <- screen_N2_rawsrev %>% 
+  separate(plate_id, into = c("garbage", "genotype", "plate_id", "growth_conditions"), sep ="/") %>% separate(growth_conditions, into = c("growth_conditions", "time"), sep = ":") %>% 
+  select(genotype:dur_100th_percentile) 
+
+setwd("/Volumes/SAMWISE/Troy/ASD_Phenomics_pub_data/cluster_screen_data")
+
+screen_cluster_rawsrev <- read_table2("data.srev", col_names = c("plate_id", "already_rev", "not_rev", "rev", "rev_dist", "dist_sd", "dist_sem", "dist_0_quart", "dist_1st_quart", "dist_2nd_quart", "dist_3rd_quart", "dsit_100th_percentile", "rev_dur", "dur_sd", "dur_sem", "dur_0_quart", "dur_1st_quart", "dur_2nd_quart", "dur_3rd_quart", "dur_100th_percentile"))
+
+screen_cluster_cleanrawsrev <- screen_cluster_rawsrev %>% 
+  separate(plate_id, into = c("garbage", "genotype", "plate_id", "growth_conditions"), sep ="/") %>% separate(growth_conditions, into = c("growth_conditions", "time"), sep = ":") %>% 
+  select(genotype:dur_100th_percentile)
+
+cleanrawsrev <- rbind(screen_N2_cleanrawsrev, screen_cluster_cleanrawsrev)
+
+
+##Optional Code to rename your factors
+
+cleanrawsrev$genotype <- recode(cleanrawsrev$genotype, `N2` = "Wild-type (N2)", `N2-2` = "Wild-type (N2)", `N2-3` = "Wild-type (N2)", `N2-4` = "Wild-type (N2)", `N2-5` = "Wild-type (N2)", `N2-6` = "Wild-type (N2)", `N2-7` = "Wild-type (N2)", `N2-8` = "Wild-type (N2)", `N2-9` = "Wild-type (N2)", `N2-10` = "Wild-type (N2)", `N2-11` = "Wild-type (N2)", `N2-12` = "Wild-type (N2)", `N2-13` = "Wild-type (N2)", `N2-14` = "Wild-type (N2)", `N2-15` = "Wild-type (N2)", `N2-16` = "Wild-type (N2)", `N2-17` = "Wild-type (N2)")
+
+
+##Make time numeric and round time 
+
+cleanrawsrev <- cleanrawsrev %>% mutate(time = as.numeric(time)) %>% 
+  mutate(time = round(time, digits = 0)) 
+
+##Calculate reversal probability
+
+cleanrawsrev <- cleanrawsrev %>% 
+  mutate(rev_prob = rev / (not_rev + rev)) 
+
+##Calculate reversal speed 
+
+cleanrawsrev <- cleanrawsrev %>%
+  mutate(rev_speed = rev_dist / rev_dur) 
+
+##optional code to remove any bad observtions
+
+cleanrawsrev <- cleanrawsrev %>% 
+  filter(!(rev_dist == "0")) 
+
+##Reorder factors
+
+cleanrawsrev$genotype <- factor(cleanrawsrev$genotype,
+    levels = c('Wild-type (N2)', 'bar-1ga80', 'chd-7', 'nlg-1', 'rme-6b1014', 'rme-6tm6649', ordered = TRUE))
+
+##Mean rev data
+
+mean_cleanrawsrev <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarize_all(mean) 
+
+
+##Add stim number NOTE: this must be changed to fit your experiment parameters 
+
+mean_cleanrawsrev$stimulus_num <- rep(1:31, times = 6) 
+
+##SD calcs
+
+prob_SD <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(prob_sd = sd(rev_prob))
+
+dur_SD <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(dur_sd = sd(rev_dur))
+
+speed_SD <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(speed_sd = sd(rev_speed))
+
+dist_SD <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(dist_sd = sd(rev_dist))
+
+
+##SEM calcs
+
+prob_SEM <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(prob_sem = sd(rev_prob)/sqrt(length(rev_prob)))
+
+dur_SEM <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(dur_sem = sd(rev_dur)/sqrt(length(rev_dur)))
+
+dist_SEM <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(dist_sem = sd(rev_dist)/sqrt(length(rev_dist)))
+
+speed_SEM <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(speed_sem = sd(rev_speed)/sqrt(length(rev_speed)))
+
+```
+
+
+```{r}
+
+##Plot mean reversal probability for chd-7 and nlg-1.
+
+
+mean_cleanrawsrev_filt <- mean_cleanrawsrev %>% 
+  filter(genotype %in% c("Wild-type (N2)", "chd-7", "rme-6b1014"))
+
+prob_SEM_filt <- prob_SEM %>% 
+  filter(genotype %in% c("Wild-type (N2)", "chd-7", "rme-6b1014"))
+
+ggplot(mean_cleanrawsrev_filt, aes(stimulus_num, rev_prob, colour = genotype)) +
+  theme_classic() + 
+  geom_line(size = 1) + 
+  geom_errorbar(aes(ymin=rev_prob-prob_SEM_filt$prob_sem, ymax=rev_prob+prob_SEM_filt$prob_sem), width = 0, size = 1) +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,1.00)) +
+  geom_point(aes(shape=genotype), size = 4.25, fill = "white", stroke = 1.25) +
+  scale_shape_manual(values=c(16,16,21)) +
+  scale_size_manual(values=c(4.25,4.25,3.75)) +
+  scale_color_manual(values=c("black", "gray39", "gray39")) +
+  labs(title = "", x = "Stimulus number", y = "Reversal probability") +
+  theme(axis.line = element_line(colour = 'black', size = 2.25)) +
+  theme(axis.ticks = element_line(colour = "black", size = 2.25)) +
+  theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(legend.position="none") +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) 
+  ggsave("screen_cluster_chd-7open_rme-6gray_prob.jpeg", width = 7, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials")
+  
+
+##Duration
+  
+mean_cleanrawsrev_filt <- mean_cleanrawsrev %>% 
+  filter(genotype %in% c("Wild-type (N2)", "chd-7", "rme-6b1014"))
+
+dur_SEM_filt <- dur_SEM %>% 
+  filter(genotype %in% c("Wild-type (N2)", "chd-7", "rme-6b1014"))
+
+ggplot(mean_cleanrawsrev_filt, aes(stimulus_num, rev_dur, colour = genotype)) + 
+  geom_line(size = 1) +
+  theme_classic() + 
+  geom_errorbar(aes(ymin=rev_dur-dur_SEM_filt$dur_sem, ymax=rev_dur+dur_SEM_filt$dur_sem), width = 0, size = 1) +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,4)) +
+  geom_point(aes(shape=genotype), size = 4.25, fill = "white", stroke = 1.25) +
+  scale_shape_manual(values=c(16,16,21)) +
+  scale_size_manual(values=c(4.25,4.25,3.75)) +
+  scale_color_manual(values=c("black", "gray39", "gray39")) +
+  labs(title = "", x = "Stimulus number", y = "Reversal duration (S)") +
+  theme(axis.line = element_line(colour = 'black', size = 2.25)) +
+  theme(axis.ticks = element_line(colour = "black", size = 2.25)) +
+   theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) +
+  theme(legend.position="none") 
+  ggsave("screen_cluster_chd-7open_rme-6gray_dur.jpeg", width = 7, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials") 
+
+##Speed
+  
+mean_cleanrawsrev_filt <- mean_cleanrawsrev %>% 
+  filter(genotype %in% c("Wild-type (N2)", "chd-7", "rme-6b1014"))
+
+speed_SEM_filt <- speed_SEM %>% 
+  filter(genotype %in% c("Wild-type (N2)", "chd-7", "rme-6b1014"))
+
+ggplot(mean_cleanrawsrev_filt, aes(stimulus_num, rev_speed, colour = genotype)) + 
+  geom_line(size = 1) +
+  theme_classic() + 
+  geom_errorbar(aes(ymin=rev_speed-speed_SEM_filt$speed_sem, ymax=rev_speed+speed_SEM_filt$speed_sem), width = 0, size = 1) +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,0.5)) +
+  geom_point(aes(shape=genotype), size = 4.25, fill = "white", stroke = 1.25) +
+  scale_shape_manual(values=c(16,16,21)) +
+  scale_size_manual(values=c(4.25,4.25,3.75)) +
+  scale_color_manual(values=c("black", "gray39", "gray39")) +
+  labs(title = "", x = "Stimulus number", y = "Reversal speed (mm/s)") +
+  theme(axis.line = element_line(colour = 'black', size = 2.25)) +
+  theme(axis.ticks = element_line(colour = "black", size = 2.25)) +
+   theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) +
+  theme(legend.position="none")
+  ggsave("screen_cluster_chd-7open_rme-6gray_speed.jpeg", width = 7, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials") 
+
+##Distance
+  
+mean_cleanrawsrev_filt <- mean_cleanrawsrev %>% 
+  filter(genotype %in% c("Wild-type (N2)", "chd-7", "rme-6b1014"))
+
+dist_SEM_filt <- dist_SEM %>% 
+  filter(genotype %in% c("Wild-type (N2)", "chd-7", "rme-6b1014"))
+
+ggplot(mean_cleanrawsrev_filt, aes(stimulus_num, rev_dist, colour = genotype)) + 
+  geom_line(size = 1) +
+  theme_classic() + 
+  geom_errorbar(aes(ymin=rev_dist-dist_SEM_filt$dist_sem, ymax=rev_dist+dist_SEM_filt$dist_sem), width = 0, size = 1) +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,1.2)) +
+  geom_point(aes(shape=genotype), size = 4.25, fill = "white", stroke = 1.25) +
+  scale_shape_manual(values=c(16,16,21)) +
+  scale_size_manual(values=c(4.25,4.25,3.75)) +
+  scale_color_manual(values=c("black", "gray39", "gray39")) +
+  labs(title = "", x = "Stimulus number", y = "Reversal Distance (mm)") +
+  theme(axis.line = element_line(colour = 'black', size = 2.25)) +
+  theme(axis.ticks = element_line(colour = "black", size = 2.25)) +
+  theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) +
+  theme(legend.position="none") +
+  ggsave("screen_cluster_chd-7open_rme-6gray_dist.jpeg", width = 7, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials") 
+
+
+##Plot mean reversal probability for nlg-1 and bar-1. 
+
+mean_cleanrawsrev_filt <- mean_cleanrawsrev %>% 
+  filter(genotype %in% c("Wild-type (N2)", "nlg-1", "bar-1ga80"))
+
+prob_SEM_filt <- prob_SEM %>% 
+  filter(genotype %in% c("Wild-type (N2)", "nlg-1", "bar-1ga80"))
+
+ggplot(mean_cleanrawsrev_filt, aes(stimulus_num, rev_prob, colour = genotype)) +
+  theme_classic() + 
+  geom_line(size = 1) +
+  geom_errorbar(aes(ymin=rev_prob-prob_SEM_filt$prob_sem, ymax=rev_prob+prob_SEM_filt$prob_sem), width = 0, size = 1) +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,1.00)) +
+  geom_point(aes(shape=genotype), size = 4.25, fill = "white", stroke = 1.25) +
+  scale_shape_manual(values=c(16,16,21)) +
+  scale_size_manual(values=c(4.25,4.25,3.75)) +
+  scale_color_manual(values=c("black", "dodgerblue2", "dodgerblue2")) +
+  labs(title = "", x = "Stimulus number", y = "Reversal probability") +
+  theme(axis.line = element_line(colour = 'black', size = 2.25)) +
+  theme(axis.ticks = element_line(colour = "black", size = 2.25)) +
+  theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(legend.position="none") +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) 
+  ggsave("screen_cluster_nlg-1open_bar-1blue_prob.jpeg", width = 7, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials")
+  
+
+##Duration
+  
+mean_cleanrawsrev_filt <- mean_cleanrawsrev %>% 
+  filter(genotype %in% c("Wild-type (N2)", "nlg-1", "bar-1ga80"))
+
+dur_SEM_filt <- dur_SEM %>% 
+  filter(genotype %in% c("Wild-type (N2)", "nlg-1", "bar-1ga80"))
+
+ggplot(mean_cleanrawsrev_filt, aes(stimulus_num, rev_dur, colour = genotype)) + 
+  geom_line(size = 1) +
+  theme_classic() + 
+  geom_errorbar(aes(ymin=rev_dur-dur_SEM_filt$dur_sem, ymax=rev_dur+dur_SEM_filt$dur_sem), width = 0, size = 1) +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,4)) +
+  geom_point(aes(shape=genotype), size = 4.25, fill = "white", stroke = 1.25) +
+  scale_shape_manual(values=c(16,16,21)) +
+  scale_size_manual(values=c(4.25,4.25,3.75)) +
+  scale_color_manual(values=c("black", "dodgerblue2", "dodgerblue2")) +
+  labs(title = "", x = "Stimulus number", y = "Reversal duration (S)") +
+  theme(axis.line = element_line(colour = 'black', size = 2.25)) +
+  theme(axis.ticks = element_line(colour = "black", size = 2.25)) +
+   theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) +
+  theme(legend.position="none") 
+  ggsave("screen_cluster_nlg-1open_bar-1blue_dur.jpeg", width = 7, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials") 
+
+##Speed
+  
+mean_cleanrawsrev_filt <- mean_cleanrawsrev %>% 
+  filter(genotype %in% c("Wild-type (N2)", "nlg-1", "bar-1ga80"))
+
+speed_SEM_filt <- speed_SEM %>% 
+  filter(genotype %in% c("Wild-type (N2)", "nlg-1", "bar-1ga80"))
+
+ggplot(mean_cleanrawsrev_filt, aes(stimulus_num, rev_speed, colour = genotype)) + 
+  geom_line(size = 1) +
+  theme_classic() + 
+  geom_errorbar(aes(ymin=rev_speed-speed_SEM_filt$speed_sem, ymax=rev_speed+speed_SEM_filt$speed_sem), width = 0, size = 1) +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,0.5)) +
+  geom_point(aes(shape=genotype), size = 4.25, fill = "white", stroke = 1.25) +
+  scale_shape_manual(values=c(16,16,21)) +
+  scale_size_manual(values=c(4.25,4.25,3.75)) +
+  scale_color_manual(values=c("black", "dodgerblue2", "dodgerblue2")) +
+  labs(title = "", x = "Stimulus number", y = "Reversal speed (mm/s)") +
+  theme(axis.line = element_line(colour = 'black', size = 2.25)) +
+  theme(axis.ticks = element_line(colour = "black", size = 2.25)) +
+   theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) +
+  theme(legend.position="none")
+  ggsave("screen_cluster_nlg-1open_bar-1blue_speed.jpeg", width = 7, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials") 
+
+##Distance
+  
+mean_cleanrawsrev_filt <- mean_cleanrawsrev %>% 
+  filter(genotype %in% c("Wild-type (N2)", "nlg-1", "bar-1ga80"))
+
+dist_SEM_filt <- dist_SEM %>% 
+  filter(genotype %in% c("Wild-type (N2)", "nlg-1", "bar-1ga80"))
+
+ggplot(mean_cleanrawsrev_filt, aes(stimulus_num, rev_dist, colour = genotype)) + 
+  geom_line(size = 1) +
+  theme_classic() + 
+  geom_errorbar(aes(ymin=rev_dist-dist_SEM_filt$dist_sem, ymax=rev_dist+dist_SEM_filt$dist_sem), width = 0, size = 1) +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,1.2)) +
+  geom_point(aes(shape=genotype), size = 4.25, fill = "white", stroke = 1.25) +
+  scale_shape_manual(values=c(16,16,21)) +
+  scale_size_manual(values=c(4.25,4.25,3.75)) +
+  scale_color_manual(values=c("black", "dodgerblue2", "dodgerblue2")) +
+  labs(title = "", x = "Stimulus number", y = "Reversal Distance (mm)") +
+  theme(axis.line = element_line(colour = 'black', size = 2.25)) +
+  theme(axis.ticks = element_line(colour = "black", size = 2.25)) +
+  theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) +
+  theme(legend.position="none") +
+  ggsave("screen_cluster_nlg-1open_bar-1blue_dist.jpeg", width = 7, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials") 
+
+```
+

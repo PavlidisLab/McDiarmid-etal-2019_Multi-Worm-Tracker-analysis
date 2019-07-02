@@ -1,0 +1,154 @@
+---
+title: "Stacked_bar_graph"
+author: "Troy McDiarmid"
+date: "December 20, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+#Load in them libraries
+
+library(tidyverse)
+library(extrafont)
+install.packages("readxl")
+library(readxl)
+
+```
+
+
+```{r}
+##Read in data
+
+setwd("/Volumes/SAMWISE/Troy/ASD_Phenomics_pub_data/Fig4_qvals_pvals_stacked_bar_2019")
+
+q_vals <- read_csv("/Volumes/SAMWISE/Troy/ASD_Phenomics_pub_data/Fig4_qvals_pvals_stacked_bar_2019/2019-01-06_CE_t-stat_pval_qval.csv", col_names = TRUE)
+
+##Removing WT replicates from the data and filtering for q values less than 0.1 (rather inelegantly)
+
+q_vals <- q_vals %>% 
+  filter(!Genotype %in% c("N2", "N2-2", "N2-3", "N2-4", "N2-5", "N2-6", "N2-7", "N2-8", "N2-9", "N2-10", "N2-11", "N2-12", "N2-13", "N2-14", "N2-15", "N2-16", "N2-17")) %>% 
+  mutate(pathlen = replace(pathlen, pathlen > 0.1, NA)) %>% 
+  mutate(bias = replace(bias, bias > 0.1, NA)) %>%
+  mutate(dir = replace(dir, dir > 0.1, NA)) %>%
+  mutate(angular = replace(angular, angular > 0.1, NA)) %>%
+  mutate(aspect = replace(aspect, aspect > 0.1, NA)) %>%
+  mutate(width = replace(width, width > 0.1, NA)) %>%
+  mutate(length = replace(length, length > 0.1, NA)) %>%
+  mutate(kink = replace(kink, kink > 0.1, NA)) %>%
+  mutate(crab = replace(crab, crab > 0.1, NA)) %>%
+  mutate(speed = replace(speed, speed > 0.1, NA)) %>%
+  mutate(curve = replace(curve, curve > 0.1, NA)) %>%
+  mutate(area = replace(area, area > 0.1, NA)) %>%
+  mutate(morphwidth = replace(morphwidth, morphwidth > 0.1, NA)) %>%
+  mutate(midline = replace(midline, midline > 0.1, NA)) %>%
+  mutate(initRespPb = replace(initRespPb, initRespPb > 0.1, NA)) %>%
+  mutate(initRespDuration = replace(initRespDuration, initRespDuration > 0.1, NA)) %>%
+  mutate(initRespSpeed = replace(initRespSpeed, initRespSpeed > 0.1, NA)) %>%
+  mutate(initRespDistance = replace(initRespDistance, initRespDistance > 0.1, NA)) %>%
+  mutate(habituationPb = replace(habituationPb, habituationPb > 0.1, NA)) %>%
+  mutate(habituationDuration = replace(habituationDuration, habituationDuration > 0.1, NA)) %>%
+  mutate(habituationSpeed = replace(habituationSpeed, habituationSpeed > 0.1, NA)) %>%
+  mutate(habituationDistance = replace(habituationDistance, habituationDistance > 0.1, NA)) %>%
+  mutate(spontPb = replace(spontPb, spontPb > 0.1, NA)) %>%
+  mutate(spontDuration = replace(spontDuration, spontDuration > 0.1, NA)) %>%
+  mutate(spontSpeed = replace(spontSpeed, spontSpeed > 0.1, NA)) %>%
+  mutate(spontDistance = replace(spontDistance, spontDistance > 0.1, NA)) %>% 
+  mutate(pathlen = replace(pathlen, pathlen < 0.1, 1)) %>% 
+  mutate(bias = replace(bias, bias < 0.1, 1)) %>%
+  mutate(morphwidth = replace(morphwidth, morphwidth < 0.1, 1)) %>%
+  mutate(dir = replace(dir, dir < 0.1, 1)) %>%
+  mutate(angular = replace(angular, angular < 0.1, 1)) %>%
+  mutate(aspect = replace(aspect, aspect < 0.1, 1)) %>%
+  mutate(width = replace(width, width < 0.1, 1)) %>%
+  mutate(length = replace(length, length < 0.1, 1)) %>%
+  mutate(kink = replace(kink, kink < 0.1, 1)) %>%
+  mutate(crab = replace(crab, crab < 0.1, 1)) %>%
+  mutate(speed = replace(speed, speed < 0.1, 1)) %>%
+  mutate(curve = replace(curve, curve < 0.1, 1)) %>%
+  mutate(area = replace(area, area < 0.1, 1)) %>%
+  mutate(midline = replace(midline, midline < 0.1, 1)) %>%
+  mutate(initRespPb = replace(initRespPb, initRespPb < 0.1, 1)) %>%
+  mutate(initRespDuration = replace(initRespDuration, initRespDuration < 0.1, 1)) %>%
+  mutate(initRespSpeed = replace(initRespSpeed, initRespSpeed < 0.1, 1)) %>%
+  mutate(initRespDistance = replace(initRespDistance, initRespDistance < 0.1, 1)) %>%
+  mutate(habituationPb = replace(habituationPb, habituationPb < 0.1, 1)) %>%
+  mutate(habituationDuration = replace(habituationDuration, habituationDuration < 0.1, 1)) %>%
+  mutate(habituationSpeed = replace(habituationSpeed, habituationSpeed < 0.1, 1)) %>%
+  mutate(habituationDistance = replace(habituationDistance, habituationDistance < 0.1, 1)) %>%
+  mutate(spontPb = replace(spontPb, spontPb < 0.1, 1)) %>%
+  mutate(spontDuration = replace(spontDuration, spontDuration < 0.1, 1)) %>%
+  mutate(spontSpeed = replace(spontSpeed, spontSpeed < 0.1, 1)) %>%
+  mutate(spontDistance = replace(spontDistance, spontDistance < 0.1, 1)) 
+
+##Replacing all NAs with zeros
+
+q_vals[is.na(q_vals)] <- 0
+
+##Getting the right genotype labels
+
+write_csv(q_vals, "/Users/troymcdiarmid/Desktop/ASD_Screen_materials/filter_qvals.csv")
+
+q_vals_correct_names <- read_excel("/Users/troymcdiarmid/Desktop/ASD_Screen_materials/Pub_Figure_data/Phenotypic_counts.xlsx") 
+
+##Getting the right genotype labels ordered to match the heatmap
+
+q_vals_correct_names_ordered <- read_excel("/Users/troymcdiarmid/Desktop/ASD_Screen_materials/Pub_Figure_data/Phenotypic_counts_ordered.xlsx")
+
+##Calculating sum of sig features in each feature class
+
+pheno_counts <- q_vals_correct_names %>% 
+  mutate(morphology = (length + width + area + midline + morphwidth)) %>% 
+  mutate(baseline = (pathlen + bias + dir + angular + aspect + kink + crab + speed + curve)) %>% 
+  mutate(sensitivity = (initRespPb + initRespDuration + initRespSpeed + initRespDistance)) %>% 
+  mutate(learning = (habituationPb + habituationDuration + habituationSpeed + habituationDistance)) %>% 
+  mutate(recovery = (spontPb + spontDuration + spontSpeed + spontDistance)) %>% 
+  select(Genotype, morphology:recovery)
+
+##Order genotype factor
+
+pheno_counts$Genotype <- factor(pheno_counts$Genotype, levels = pheno_counts$Genotype)
+
+##Gather pheno_counts
+
+pheno_counts <- pheno_counts %>% 
+  gather(`morphology`, `baseline`, `sensitivity`, `learning`, `recovery`, key = "feature_class", value = "count")
+
+##order factors
+
+pheno_counts$feature_class <- factor(pheno_counts$feature_class,
+    levels = c('recovery', 'learning', 'sensitivity', 'baseline', 'morphology'), ordered = TRUE)
+
+
+
+
+```
+
+
+```{r}
+##make the plot
+
+
+ggplot(data = pheno_counts) + 
+  geom_bar(aes(x = Genotype, y = count, fill = feature_class), stat = "identity") +
+  theme_classic() +
+  labs(y = "n phenotypes (FDR < 0.1)", x = "") +
+  scale_y_continuous(breaks=seq(0,26,2)) +
+  theme(legend.title= element_text(family="Arial Bold")) +
+  theme(legend.text= element_text(family="Arial Bold")) +
+  theme(axis.line = element_line(colour = 'black', size = 1)) +
+  theme(axis.ticks.y = element_line(colour = "black", size = 0.5)) +
+  theme(axis.ticks.length=unit(.25, "cm")) +
+  theme(axis.ticks.x = element_line(size = 0)) +
+  theme(axis.text = element_text(family="Arial Bold", colour = "black", size = 9.5)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 12)) +
+  theme(axis.title.y = element_text(family="Arial Bold", colour = "black", size = 16)) +
+  scale_fill_manual(values=c("#76b6f4", "#d1e6fb", "dodgerblue2", "gray39", "black")) 
+
+ggsave("ASD_Pheno_counts.jpeg", width = 18, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials")
+   
+
+
+```
+

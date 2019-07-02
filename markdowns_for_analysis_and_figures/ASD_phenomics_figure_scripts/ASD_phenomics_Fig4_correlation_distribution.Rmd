@@ -1,0 +1,159 @@
+---
+title: "ASD_phenomics_correlation_distributions"
+author: "Troy McDiarmid"
+date: "January 15, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+library(tidyverse)
+
+##Read in t-stat matrix and filter to remove N2 replicates
+
+setwd("/Users/troymcdiarmid/Desktop/ASD_Screen_materials/Pub_Figure_data")
+
+t_vals <- read.csv("/Users/troymcdiarmid/Desktop/ASD_Screen_materials/Pub_Figure_data/2019-01-16_CE_t-stat.csv")
+
+t_vals <- t_vals %>% 
+  filter(!Genotype %in% c("N2", "N2-2", "N2-3", "N2-4", "N2-5", "N2-6", "N2-7", "N2-8", "N2-9", "N2-10", "N2-11", "N2-12", "N2-13", "N2-14", "N2-15", "N2-16", "N2-17"))
+
+write_csv(t_vals, "/Users/troymcdiarmid/Desktop/ASD_Screen_materials/Pub_Figure_data/2019-01-16_CE_t-stat.csv")
+
+t_vals <- read.csv("/Users/troymcdiarmid/Desktop/ASD_Screen_materials/Pub_Figure_data/2019-01-16_CE_t-stat.csv", row.names=1)
+
+##Create Pearson and Spearman correlation matrices
+
+pearson_cor_matrix <- cor(t(t_vals), method="pearson")
+
+spearman_cor_matrix <- cor(t(t_vals), method="spearman")
+
+##Convert correltation matrices to matrix with a correlation coefficient for each genotype X genotype pair. 
+
+pearson_cor_data_frame <- data.frame(genotype_1=rownames(pearson_cor_matrix)[row(pearson_cor_matrix)], genotype_2=colnames(pearson_cor_matrix)[col(pearson_cor_matrix)], corr=c(pearson_cor_matrix)) %>% 
+  unite(genotype_pair, genotype_1, genotype_2) 
+
+
+##Remove all perfect corrleations/self comparisons and duplicate rows
+
+pearson_cor_data_frame <- pearson_cor_data_frame %>% 
+  filter(corr < 1)
+
+pearson_cor_data_frame <- pearson_cor_data_frame %>% 
+  distinct(corr, .keep_all = TRUE)
+
+
+##Filter out second allele pair correlation scores
+
+second_allele_cor_data_frame <- pearson_cor_data_frame %>% 
+  filter(genotype_pair %in% c("CACNA1C(unc-2)gk366_CACNA1C(unc-2)e55", "ARX(unc-4)gk705_ARX(unc-4)e120", "CLASP1(cls-3)tm5775_CLASP1(cls-3)ok3375", "CTNNB1(bar-1)mu63_CTNNB1(bar-1)ga80", "DST(vab-10)gk45_DST(vab-10)e698", "FAT1&FAT2(cdh-4)ok1323_FAT1&FAT2(cdh-4)hd40", "GABRB3(gab-1)tm3577_GABRB3(gab-1)gk189051", "GAPVD1(rme-6)tm6649_GAPVD1(rme-6)b1014", "KCNJ10(irk-3)tm7416_KCNJ10(irk-3)gk542081", "NRXN1(nrx-1)ok1649_NRXN1(nrx-1)ds1", "PTEN(daf-18)ok480_PTEN(daf-18)e1375", "RIMS1(unc-10)md1117_RIMS1(unc-10)e102", "SHANK1&2&3(shn-1)ok1241_SHANK1&2&3(shn-1)gk181", "SPAG9(unc-16)n370_SPAG9(unc-16)e109", "SPAST(spas-1)tm683_SPAST(spas-1)ok1608", "SYNE1(anc-1)e1802_SYNE1(anc-1)e1753","SYNGAP1(gap-2)tm748_SYNGAP1(gap-2)ok1001", "TBR1(tbx-38)tm581_TBR1(tbx-38)gk186909", "UBR4(ubr-4)tm3968_UBR4(ubr-4)gk109613", "UPF3B(smg-4)tm5409_UPF3B(smg-4)gk244058", "ZBTB20(ztf-6)tm1803_ZBTB20(ztf-6)gk122271"))
+
+all_other_pairs_data_frame <- pearson_cor_data_frame %>% 
+  filter(!(genotype_pair %in% c("CACNA1C(unc-2)gk366_CACNA1C(unc-2)e55", "ARX(unc-4)gk705_ARX(unc-4)e120", "CLASP1(cls-3)tm5775_CLASP1(cls-3)ok3375", "CTNNB1(bar-1)mu63_CTNNB1(bar-1)ga80", "DST(vab-10)gk45_DST(vab-10)e698", "FAT1&FAT2(cdh-4)ok1323_FAT1&FAT2(cdh-4)hd40", "GABRB3(gab-1)tm3577_GABRB3(gab-1)gk189051", "GAPVD1(rme-6)tm6649_GAPVD1(rme-6)b1014", "KCNJ10(irk-3)tm7416_KCNJ10(irk-3)gk542081", "NRXN1(nrx-1)ok1649_NRXN1(nrx-1)ds1", "PTEN(daf-18)ok480_PTEN(daf-18)e1375", "RIMS1(unc-10)md1117_RIMS1(unc-10)e102", "SHANK1&2&3(shn-1)ok1241_SHANK1&2&3(shn-1)gk181", "SPAG9(unc-16)n370_SPAG9(unc-16)e109", "SPAST(spas-1)tm683_SPAST(spas-1)ok1608", "SYNE1(anc-1)e1802_SYNE1(anc-1)e1753","SYNGAP1(gap-2)tm748_SYNGAP1(gap-2)ok1001", "TBR1(tbx-38)tm581_TBR1(tbx-38)gk186909", "UBR4(ubr-4)tm3968_UBR4(ubr-4)gk109613", "UPF3B(smg-4)tm5409_UPF3B(smg-4)gk244058", "ZBTB20(ztf-6)tm1803_ZBTB20(ztf-6)gk122271")))
+
+##Plot all gene pair correlation distribution
+
+ggplot(all_other_pairs_data_frame, aes(x = corr))+
+  geom_density(color="black", fill="gray39", alpha ="0.5") +
+  theme_classic() +
+  labs(y = "Frequency", x = "Pearson Correlation Coefficient") +
+  theme(legend.title= element_text(family="Arial Bold")) +
+  theme(legend.text= element_text(family="Arial Bold")) +
+  theme(axis.line = element_line(colour = 'black', size = 1)) +
+  theme(axis.ticks.y = element_line(colour = "black", size = 0.5)) +
+  theme(axis.ticks.length=unit(.25, "cm")) +
+  theme(axis.ticks.x = element_line(size = 0)) +
+  theme(axis.text = element_text(family="Arial Bold", colour = "black", size = 9.5)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  theme(axis.title.x = element_text(family="Arial Bold", colour = "black", size = 12)) +
+  theme(axis.title.y = element_text(family="Arial Bold", colour = "black", size = 16)) +
+  scale_fill_manual(values=c("#76b6f4", "#d1e6fb", "dodgerblue2", "gray39", "black")) + ggsave("All_gene_pairs_correlation_distribution.jpeg", width = 8, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials")
+
+##Plot second allele distribution versus all other gene pairs
+
+ggplot() +
+  geom_density(data = all_other_pairs_data_frame, aes(x = corr), color="gray39", fill="gray39", alpha ="0.5") +
+  geom_density(data = second_allele_cor_data_frame, aes(x = corr), color="dodgerblue2", fill="dodgerblue2", alpha ="0.5") + 
+  geom_vline(data = all_other_pairs_data_frame, aes(xintercept = mean(corr)),
+            color="gray39", linetype="dashed", size=1) +
+  geom_vline(data = second_allele_cor_data_frame, aes(xintercept = mean(corr)),
+            color="dodgerblue2", linetype="dashed", size=1) +
+  theme_classic() +
+  labs(y = "Density", x = "Pearson correlation coefficient") +
+  theme(legend.title= element_text(family="Arial Bold")) +
+  theme(legend.text= element_text(family="Arial Bold")) +
+  theme(axis.line = element_line(colour = 'black', size = 1.25)) +
+  theme(axis.ticks.y = element_line(colour = "black", size = 1.25)) +
+  theme(axis.ticks.x = element_line(size = 1.25)) +
+   theme(axis.ticks.length=unit(.25, "cm")) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 24)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 24)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 24)) +
+  scale_fill_manual(values=c("#76b6f4", "#d1e6fb", "dodgerblue2", "gray39", "black")) + ggsave("Comparison_of_gene_pair_correlation_distributions.jpeg", width = 14, height = 8, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials")
+
+
+```
+
+
+
+```{r}
+##Sampling distributions to investigate robustness of distirbution differences between second allele and all other allele pairs. 
+
+##Sample ditributions
+
+sample_t_vals <- sample(t_vals, size = 26, replace = TRUE)
+
+##New pearson correlation matrix from randomly sampled data
+
+sample_pearson_cor_matrix <- cor(t(sample_t_vals), method="pearson")
+
+##Convert correltation matrices to matrix with a correlation coefficient for each genotype X genotype pair. 
+
+sample_pearson_cor_data_frame <- data.frame(genotype_1=rownames(sample_pearson_cor_matrix)[row(sample_pearson_cor_matrix)], genotype_2=colnames(sample_pearson_cor_matrix)[col(sample_pearson_cor_matrix)], corr=c(sample_pearson_cor_matrix)) %>% 
+  unite(genotype_pair, genotype_1, genotype_2) 
+
+
+##Remove all perfect corrleations/self comparisons and duplicate rows
+
+sample_pearson_cor_data_frame <- sample_pearson_cor_data_frame %>% 
+  filter(corr < 1)
+
+sample_pearson_cor_data_frame <- sample_pearson_cor_data_frame %>% 
+  distinct(corr, .keep_all = TRUE)
+
+
+##Filter out second allele pairs into second data frame
+
+sample_second_allele_cor_data_frame <- sample_pearson_cor_data_frame %>% 
+  filter(genotype_pair %in% c("CACNA1C(unc-2)gk366_CACNA1C(unc-2)e55", "ARX(unc-4)gk705_ARX(unc-4)e120", "CLASP1(cls-3)tm5775_CLASP1(cls-3)ok3375", "CTNNB1(bar-1)mu63_CTNNB1(bar-1)ga80", "DST(vab-10)gk45_DST(vab-10)e698", "FAT1&FAT2(cdh-4)ok1323_FAT1&FAT2(cdh-4)hd40", "GABRB3(gab-1)tm3577_GABRB3(gab-1)gk189051", "GAPVD1(rme-6)tm6649_GAPVD1(rme-6)b1014", "KCNJ10(irk-3)tm7416_KCNJ10(irk-3)gk542081", "NRXN1(nrx-1)ok1649_NRXN1(nrx-1)ds1", "PTEN(daf-18)ok480_PTEN(daf-18)e1375", "RIMS1(unc-10)md1117_RIMS1(unc-10)e102", "SHANK1&2&3(shn-1)ok1241_SHANK1&2&3(shn-1)gk181", "SPAG9(unc-16)n370_SPAG9(unc-16)e109", "SPAST(spas-1)tm683_SPAST(spas-1)ok1608", "SYNE1(anc-1)e1802_SYNE1(anc-1)e1753","SYNGAP1(gap-2)tm748_SYNGAP1(gap-2)ok1001", "TBR1(tbx-38)tm581_TBR1(tbx-38)gk186909", "UBR4(ubr-4)tm3968_UBR4(ubr-4)gk109613", "UPF3B(smg-4)tm5409_UPF3B(smg-4)gk244058", "ZBTB20(ztf-6)tm1803_ZBTB20(ztf-6)gk122271"))
+
+sample_all_other_pairs_data_frame <- sample_pearson_cor_data_frame %>% 
+  filter(!(genotype_pair %in% c("CACNA1C(unc-2)gk366_CACNA1C(unc-2)e55", "ARX(unc-4)gk705_ARX(unc-4)e120", "CLASP1(cls-3)tm5775_CLASP1(cls-3)ok3375", "CTNNB1(bar-1)mu63_CTNNB1(bar-1)ga80", "DST(vab-10)gk45_DST(vab-10)e698", "FAT1&FAT2(cdh-4)ok1323_FAT1&FAT2(cdh-4)hd40", "GABRB3(gab-1)tm3577_GABRB3(gab-1)gk189051", "GAPVD1(rme-6)tm6649_GAPVD1(rme-6)b1014", "KCNJ10(irk-3)tm7416_KCNJ10(irk-3)gk542081", "NRXN1(nrx-1)ok1649_NRXN1(nrx-1)ds1", "PTEN(daf-18)ok480_PTEN(daf-18)e1375", "RIMS1(unc-10)md1117_RIMS1(unc-10)e102", "SHANK1&2&3(shn-1)ok1241_SHANK1&2&3(shn-1)gk181", "SPAG9(unc-16)n370_SPAG9(unc-16)e109", "SPAST(spas-1)tm683_SPAST(spas-1)ok1608", "SYNE1(anc-1)e1802_SYNE1(anc-1)e1753","SYNGAP1(gap-2)tm748_SYNGAP1(gap-2)ok1001", "TBR1(tbx-38)tm581_TBR1(tbx-38)gk186909", "UBR4(ubr-4)tm3968_UBR4(ubr-4)gk109613", "UPF3B(smg-4)tm5409_UPF3B(smg-4)gk244058", "ZBTB20(ztf-6)tm1803_ZBTB20(ztf-6)gk122271")))
+
+
+##Plot second allele distribution versus all other gene pairs
+
+ggplot() +
+  geom_density(data = sample_all_other_pairs_data_frame, aes(x = corr), color="gray39", fill="gray39", alpha ="0.5") +
+  geom_density(data = sample_second_allele_cor_data_frame, aes(x = corr), color="dodgerblue2", fill="dodgerblue2", alpha ="0.5") + 
+  geom_vline(data = sample_all_other_pairs_data_frame, aes(xintercept = mean(corr)),
+            color="gray39", linetype="dashed", size=1) +
+  geom_vline(data = sample_second_allele_cor_data_frame, aes(xintercept = mean(corr)),
+            color="dodgerblue2", linetype="dashed", size=1) +
+  theme_classic() +
+  labs(y = "Density", x = "Pearson correlation coefficient") +
+  theme(legend.title= element_text(family="Arial Bold")) +
+  theme(legend.text= element_text(family="Arial Bold")) +
+  theme(axis.line = element_line(colour = 'black', size = 1.25)) +
+  theme(axis.ticks.y = element_line(colour = "black", size = 1.25)) +
+  theme(axis.ticks.x = element_line(size = 1.25)) +
+   theme(axis.ticks.length=unit(.25, "cm")) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 24)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 24)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 24)) +
+  scale_fill_manual(values=c("#76b6f4", "#d1e6fb", "dodgerblue2", "gray39", "black")) + ggsave("Sample30_Comparison_of_gene_pair_correlation_distributions.jpeg", width = 7, height = 4, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials")
+
+```
+

@@ -1,0 +1,109 @@
+---
+title: "Speed_Length_Area_script"
+author: "Troy McDiarmid"
+date: "September 30, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+#Load in them libraries
+
+library(tidyverse)
+
+
+```
+
+```{r}
+
+##Bash loop to output reversals and basic morphology from tracker plates
+
+for folder in $( ls ); do Chore --segment --shadowless --pixelsize 0.027 --minimum-move-body 2 --minimum-time 20 --output speed,midline,morphwidth --plugin Reoutline::despike --plugin Respine --plugin MeasureReversal::tap::dt=1::collect=0.5  $folder; done
+
+##Bash argument to grep all .dat files into a summary of morphology
+
+grep -H '[.]*' $(find . -name '*.dat') > data.smorph
+
+cd ../..
+
+```
+
+```{r}
+##Comand to read .srev file in 
+
+setwd("/Users/troymcdiarmid/Desktop/ASD_Screen_materials/Pub_Figure_data/Troys_N2")
+
+rawsmorph <- read_table2("data.smorph", col_names = c("plate_id", "number", "good_number", "speed"))
+
+cleanrawsmorph <- rawsmorph %>% 
+  separate(plate_id, into = c("garbage", "genotype", "plate_id", "growth_conditions"), sep ="/") %>% separate(growth_conditions, into = c("growth_conditions", "time"), sep = ":") 
+
+
+##Code to remove all 0 measurement entries 
+
+cleanrawsmorph <- cleanrawsmorph %>% 
+  filter(!(speed == "0")) 
+
+####Make time numeric and round time
+
+cleanrawsmorph <- cleanrawsmorph %>% mutate(time = as.numeric(time)) %>% 
+  mutate(time = round(time, digits = 0)) 
+
+
+```
+
+
+```{r}
+##Code to calculate mean of metrics
+
+mean_cleanrawsmorph <- cleanrawsmorph %>% 
+  select(genotype, time, speed) 
+
+mean_cleanrawsmorph <- mean_cleanrawsmorph %>%  
+  group_by(time) %>%
+  summarize_all(mean) 
+
+
+##SEM calcs
+
+clean_rawsmorph_SEM <- cleanrawsmorph %>% 
+  select(time, speed) %>% 
+  group_by(time) %>% 
+  summarise(speed_sem = sd(speed)/sqrt(length(speed)))
+
+```
+
+
+```{r}
+
+##Now to make a plot of midline length, morphwidth, and speed! 
+
+##Speed with SEM
+
+ggplot(mean_cleanrawsmorph, aes(time, speed)) +
+  geom_errorbar(aes(ymin=speed-clean_rawsmorph_SEM$speed_sem,  ymax=speed+clean_rawsmorph_SEM$speed_sem), width = 0, alpha = 0.5, size = 0.5, colour = "dodgerblue2") +
+  geom_line(size = 1, colour = "dodgerblue2") +
+  labs(title = "Absolute Movement Speed", y = "Movement speed (mm/s)") +
+  theme_classic() +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,0.4)) +
+  scale_x_continuous(expand = c(0,0),
+                     limits = c(0,1210)) +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  theme(axis.line = element_line(colour = 'black', size = 1.75)) +
+  theme(axis.line.x = element_line(colour = 'black', size = 0)) +
+  theme(axis.ticks = element_line(colour = "black", size = 1.75)) +
+  theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 20)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 20)) +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) 
+
+ggsave("N2_average_speed.jpeg", width = 10, height = 4, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials")
+
+
+
+
+```
+
+
