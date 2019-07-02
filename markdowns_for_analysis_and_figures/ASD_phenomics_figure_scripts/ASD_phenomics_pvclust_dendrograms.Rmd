@@ -18,12 +18,12 @@ setwd(here::here())
 
 ## All features
 
-![](../../plots/t.test.pvclust_all.png)
+![](../../pvclust_plots/t.test.pvclust_all.png)
 
 ## Morphological features
 
-![](../../plots/t.test.pvclust_morpho.png)
+![](../../pvclust_plots/t.test.pvclust_morpho.png)
 
 ## Sensory and habituation learning features
 
-![](../../plots/t.test.pvclust_learning.png)
+![](../../pvclust_plots/t.test.pvclust_learning.png)
