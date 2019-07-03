@@ -11,6 +11,7 @@ Analysis code for "Systematic phenomics analysis of ASD-associated genes reveals
   * [Additional data](#additional-data)
 * [Usage](#usage)
 * [Contact](#contact)
+* [Project authors](#authors)
 * [Acknowledgements](#acknowledgements)
 
 
@@ -97,6 +98,19 @@ Troy A. McDiarmid - [GitHub](https://github.com/troymcdiarmid) - [@Troy_McD_UBC]
 Further information and requests for resources and reagents should be directed to and will be
 fulfilled by the Lead Contact, Catharine H. Rankin (crankin@psych.ubc.ca).
 
+<!-- PROJECT AUTHORS -->
+## Project authors
+* Troy A. McDiarmid  
+* Manuel Belmadani  
+* Joseph Liang  
+* Fabian Meili  
+* Eleanor A. Mathews
+* Gregory P. Mullen
+* James B. Rand
+* Kota Mizumoto
+* Kurt Haas
+* Paul Pavlidis
+* Catharine H. Rankin
 
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
