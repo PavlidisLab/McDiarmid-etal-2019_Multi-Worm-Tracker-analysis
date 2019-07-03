@@ -42,7 +42,7 @@ Copyright (C) 2018 The R Foundation for Statistical Computing
 Platform: x86_64-redhat-linux-gnu (64-bit)
 ```
 #### System packages
-Some system packages are required for specific scripts. The operating system used to develop those scripts was `CentOS Linux release 7.6.1810 (Core)`. The following packages are required for specific parts of the document:
+Some system packages are required for specific scripts. The operating system used to develop those scripts was `CentOS Linux release 7.6.1810 (Core)`. The following packages are required for specific parts of the preprocessing scripts or markdown documents:
 
 * The system package for Cairo Graphics is required to save some of the figures in pdf format. See instructions at [https://cairographics.org/download/](https://cairographics.org/download/).
 * ImageMagick is used to process some images through system calls. The version tested was `ImageMagick 6.7.8-9 2016-06-16 Q16`. See http://www.imagemagick.org 
