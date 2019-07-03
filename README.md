@@ -90,13 +90,12 @@ Distributed under the *** License. See `LICENSE` for more information.
 
 <!-- CONTACT -->
 ## Contact
-
+For questions or comments specific to the implementation provided in this repository, please contact one of the following:
 
 Manuel Belmadani - [GitHub](https://github.com/mbelmadani) - [@Pragmatwit](https://twitter.com/pragmatwit) - manuel.belmadani@msl.ubc.ca  
 Troy A. McDiarmid - [GitHub](https://github.com/troymcdiarmid) - [@Troy_McD_UBC](https://twitter.com/Troy_McD_UBC)
 
-Further information and requests for resources and reagents should be directed to and will be
-fulfilled by the Lead Contact, Catharine H. Rankin (crankin@psych.ubc.ca).
+Additional questions about the project, such as further information and requests for resources and reagents should be directed to and will be fulfilled by the Lead Contact, Catharine H. Rankin (crankin@psych.ubc.ca).
 
 <!-- PROJECT AUTHORS -->
 ## Project authors
