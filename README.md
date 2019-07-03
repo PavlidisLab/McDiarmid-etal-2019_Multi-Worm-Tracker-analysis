@@ -11,7 +11,7 @@ Analysis code for "Systematic phenomics analysis of ASD-associated genes reveals
   * [Additional data](#additional-data)
 * [Usage](#usage)
 * [Contact](#contact)
-* [Project authors](#authors)
+* [Project authors](#project-authors)
 * [Acknowledgements](#acknowledgements)
 
 
