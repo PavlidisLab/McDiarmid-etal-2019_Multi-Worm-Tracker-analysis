@@ -67,6 +67,18 @@ If the data is all placed in the default location, then no changes to the config
 ## Usage
 Raw data can be processed using `main.sh` (for `bash` environments) or `main.R`. Individual markdowns were generated using `knitr` in [RStudio](https://www.rstudio.com/). 
 
+### Command line
+The `bash` or `R` version of the main scripts do the same thing, except that `main.sh` also retains runtime logs in the `logs/` directory.
+
+```
+## Using bash
+./main.sh
+
+## Using Rscript
+Rscript main.R
+```
+To run/re-run individual parts of the analysis, see the sub-scripts called in `main.R`.
+
 <!-- LICENSE -->
 <!--
 ## License
