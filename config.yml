@@ -3,6 +3,7 @@ default:
     - 'datasets/part1_dat/'
     - 'datasets/part1_rev/'
     - 'datasets/part2/'
+    - '/cosmos/data/project-data/mbelmadani_worm-phenomics-ASD/worms_2019_08_15/ASD_phenomics_data_revision_organized_by_gene_2/'
   'experiment.days': 'user_defined_feature_labels_and_categories/experiment.days.perPlate'
   'morphological-features': 'user_defined_feature_labels_and_categories/morphological_features.csv'
   'stimuli-features': 'user_defined_feature_labels_and_categories/stimuli_features.csv'
@@ -10,7 +11,7 @@ default:
   'plots': 'plots/'
   'feature-subcategories': 'user_defined_feature_labels_and_categories/ASD_phenomics_feature_subcategories_0101_2019.tsv'
   'feature-subcategories-labels': 'user_defined_feature_labels_and_categories/ASD_phenomics_feature_labels_subcategories_0101_2019.tsv'
-  'strain-genotype-labels': 'user_defined_feature_labels_and_categories/Strain_genotype_labels_withSource_1212_2018.tsv'
+  'strain-genotype-labels': 'user_defined_feature_labels_and_categories/Strain_genotype_labels_withSource_0109_2019.tsv'
   'clustering':
     'ncpu': 30
     'nboot': 50000
@@ -57,6 +58,13 @@ default:
       - "N2-15"
       - "N2-16"
       - "N2-17"
+      - "N2-20"
+      - "N2-18"
+      - "N2-24"
+      - "N2-23"
+      - "N2-21"
+      - "N2-19"
+      - "N2-22"
     'featureset':
       'computed':
         - "probNR"
