@@ -62,6 +62,7 @@ iheatmapper <- function(X,
   
   colnames(X) <- translate(colnames(X), dictionary = "features")
   rownames(X) <- translate(rownames(X), dictionary = "alleles")
+  
   if (is.null(colorClip)) {
     p <- main_heatmap(
       X,
@@ -161,7 +162,10 @@ iheatmapper <- function(X,
 
 translate <-
   ## Translate a vector of values x using a specified dictionary (alleles, or features.)
-  function(x, dictionary = "alleles") {
+  function(x, dictionary = "alleles", on_failure=c("fail", "usekey")) {
+    
+    on_failure = match.arg(on_failure)
+    
     if (dictionary == "alleles") {
       dictionary = allele.labels
     } else if (dictionary == "features") {
@@ -170,15 +174,25 @@ translate <-
     
     ret =  as.character(unlist(sapply(
       X = c(x),
-      FUN = function(key)
-        dictionary[dictionary$Source == key, "Label"]
+      FUN = function(key) {
+        translation = dictionary[dictionary$Source == key, "Label"]
+        if (on_failure == "fail") {
+          translation = ifelse(is.na(translation), stop("Unknown translation"), translation)
+        } else if (on_failure == "usekey") {
+          translation = ifelse(is.na(translation), key, translation) 
+        } else {
+          stop("Unexpected behaviour in translate()" )  
+        }
+        
+        translation
+      }
     )))
-    
+
     if (!assertthat::are_equal(length(c(x)),
                                length(ret))) {
       stop("Translation failed.")
     }
-    
+
     return(ret)
   }
 
@@ -399,7 +413,7 @@ phenotypePlotByMean <-
         LABEL.LEFT = LABEL.CANDIDATES[grep(TRUE, (LABEL.CANDIDATES[1:WT.POS] != ""))][1:limitOutlier]
         LABEL.RIGHT = LABEL.CANDIDATES[WT.POS:length(LABEL.CANDIDATES)][grep(TRUE, (LABEL.CANDIDATES[WT.POS:length(LABEL.CANDIDATES)] != ""))]
         if (length(LABEL.RIGHT) > limitOutlier) {
-          LABEL.RIGHT = LABEL.RIGHT[(length(LABEL.RIGHT) - limitOutlier):(length(LABEL.RIGHT))]    
+          LABEL.RIGHT = LABEL.RIGHT[(length(LABEL.RIGHT) - limitOutlier + 1):(length(LABEL.RIGHT))]    
         }
         LABEL.SAVED = unique(c(LABEL.LEFT, LABEL.RIGHT))
         LABEL.PRUNE = setdiff(outlier, c(LABEL.SAVED, ""))
@@ -506,6 +520,7 @@ correlationHeatmap <-
     
     loadHeatmapFeatureColors(X)
     feature.class.df = data.frame(Feature=  feature.class$Class) # Set globally.
+    rownames(feature.class.df) <- feature.class$Feature
     p <- 
       pheatmap(X,
                labels_row = translate(rownames(X), dictionary = "features"),

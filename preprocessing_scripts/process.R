@@ -4,6 +4,9 @@ source("preprocessing_scripts/utils.R")
 morphologicalDF <- read.table( paste0(config::get("data"), "morphologicalDF.tsv"), header=T, row.names=1)
 stimuliDF <- read.table( paste0(config::get("data"), "stimuliDF.tsv"), header=T)
 
+morphologicalDF = morphologicalDF[morphologicalDF$plate != "20190718_124057",]
+stimuliDF = stimuliDF[stimuliDF$plate != "20190718_124057",]
+
 stimEnd <- 900 # Recommendation, last stim is about at 890 and then 300s later for spontaneous recovery.
 stimStart <- min(stimuliDF$time) # When did the first tap start?
 burnStart <- 300 # Recommendation
@@ -91,6 +94,11 @@ dim(burnIn.pcs.mtrx)
 dim(spontaneous.pcs.mtrx)
 dim(spontaneous.pcm.mtrx)
 
+setdiff(rownames(burnIn.pcs.mtrx), rownames(spontaneous.pcs.mtrx))
+setdiff(rownames(spontaneous.pcs.mtrx), rownames(burnIn.pcs.mtrx))
+
+setdiff(rownames(spontaneous.pcs.mtrx), rownames(after.pcs.mtrx))
+setdiff(rownames(after.pcs.mtrx), rownames(spontaneous.pcs.mtrx))
 
 # Fixing the missing row
 temprow <- matrix(c(rep.int(NA,length(data))),nrow=1,ncol=ncol(spontaneous.pcm.mtrx))

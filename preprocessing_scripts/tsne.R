@@ -199,7 +199,7 @@ cairo_pdf(
 p.labelled = p + ggrepel::geom_label_repel(aes(
   x = as.numeric(x),
   y = as.numeric(y),
-  label = tsne_Y.ASD$genes
+  label = translate(as.character(tsne_Y.ASD$genes), dictionary = "alleles")
 ))
 print(p.labelled)
 dev.off()
@@ -233,7 +233,7 @@ p <- plotly::plot_ly(
   x = tsne_Y.3d[, 1],
   y = tsne_Y.3d[, 2],
   z = tsne_Y.3d[, 3],
-  name = rownames(tsne_Y.3d),
+  name = translate(as.character(rownames(tsne_Y.3d)), dictionary = "alleles"),
   color = tsne_Y.3d$colours,
   colors = unique(tsne_Y.3d$colours),
   marker = list(showscale = FALSE)

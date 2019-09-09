@@ -76,10 +76,16 @@ for (feature in colnames(wormData.feature.mtrx.plate.squashed)){
 ## summary(t.stat) # Sanity check
 ## iheatmapper( t.stat ) # Visual sanity check
 
+t.qval <- apply(t.pval,
+                MARGIN = 2,
+                function(col) p.adjust(col, method = 'fdr'))
+
+
 ## ================================
 ## Save objects
 writeObject(t.stat)
 writeObject(t.pval)
+writeObject(t.qval)
 writeObject(t.mean)
 writeObject(CI95.lo)
 writeObject(CI95.hi)

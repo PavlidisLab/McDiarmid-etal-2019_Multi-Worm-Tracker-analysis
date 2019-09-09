@@ -20,11 +20,18 @@ isWT <- grepl("^N2", rownames(t.stat))
 t.stat <- t.stat[!isWT,] # Don't cluster on the WTs
 
 wormData.feature.mtrx <- t.stat
-wormData.feature.mtrx.reversals <-t.stat[,colnames(reversals.src)]
-wormData.feature.mtrx.morpho <- t.stat[,setdiff(colnames(t.stat), 
+
+################333
+# wormData.feature.mtrx[wormData.feature.mtrx > 50] <- 50
+# wormData.feature.mtrx[wormData.feature.mtrx < -50] <- -50
+# NBOOT =5000
+################33
+
+wormData.feature.mtrx.reversals <-wormData.feature.mtrx[,colnames(reversals.src)]
+wormData.feature.mtrx.morpho <- wormData.feature.mtrx[,setdiff(colnames(t.stat), 
                                                 colnames(reversals.src))]
 
-wormData.feature.mtrx.learning <-t.stat[,LEARNING_FEATURES] 
+wormData.feature.mtrx.learning <-wormData.feature.mtrx[,LEARNING_FEATURES] 
 
 wormData.feature.mtrx.plate <- readObjectAsMatrix("wormData.plate.feature.mtrx")
 days.melted <- getDateInformationByPlate(wormData.feature.mtrx.plate)
@@ -48,8 +55,10 @@ pv.genes.reversals <- pvclust(data = t(wormData.feature.mtrx.reversals),
                               parallel = COMPUTE
 )
 
+# worm.feature.mtrx.learning.nopb = t(wormData.feature.mtrx.learning[,setdiff(colnames(wormData.feature.mtrx.learning), colnames(wormData.feature.mtrx.learning)[grep(colnames(wormData.feature.mtrx.learning), pattern = "Pb$")])]) # Version without probabilities
+
 pv.genes.learning <- pvclust(data = t(wormData.feature.mtrx.learning), # TODO/FIXME: Is this correct? 
-                             nboot = NBOOT,
+                             nboot = NBOOT,  #r=1.0,
                              iseed = SEED, 
                              parallel = COMPUTE 
 )
