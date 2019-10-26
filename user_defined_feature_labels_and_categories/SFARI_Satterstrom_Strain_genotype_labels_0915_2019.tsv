@@ -1,0 +1,136 @@
+Allele	HGNC Symbol	SFARI Gene genetic-category	SFARI Gene gene-score	SFARI Gene syndromic	Satterstrom et al ASD NDD class	Satterstrom et al. Evidence for ASD association	Satterstrom et al. Molecular function
+AGAP2•cnt-2(ok1767)	AGAP2	Rare Single Gene Mutation	3	0	NA	NA	NA
+AKAP9•hcp-1(gk237614)	AKAP9	Rare Single Gene Mutation	3	0	NA	NA	NA
+AP2S1•aps-2(tm2752)	AP2S1	NA	NA	NA	ASD predominant	FDR _ 0.05	Neuronal communication
+ARID1B•let-526(gk110913)	ARID1B	Rare Single Gene Mutation, Syndromic	1	1	ASD & NDD	FWER _ 0.05	Gene expression regulation
+ARX•unc-4(e120)	ARX	Rare Single Gene Mutation, Syndromic	NA	1	NA	NA	NA
+ARX•unc-4(gk705)	ARX	Rare Single Gene Mutation, Syndromic	NA	1	NA	NA	NA
+BCL11A•bcl-11(tm522)	BCL11A	Rare Single Gene Mutation, Syndromic	2	1	ASD & NDD	FDR _ 0.05	Gene expression regulation
+CACNA1C•egl-19(n582)	CACNA1C	Rare Single Gene Mutation, Syndromic, Genetic Association, Functional	NA	1	NA	NA	NA
+CACNA1E•unc-2(e55)	CACNA1E	Rare Single Gene Mutation	3	0	ASD & NDD	FDR _ 0.05	Neuronal communication
+CACNA1E•unc-2(gk366)	CACNA1E	Rare Single Gene Mutation	3	0	ASD & NDD	FDR _ 0.05	Neuronal communication
+CACNA1H•cca-1(ad1650)	CACNA1H	Rare Single Gene Mutation	2	0	NA	NA	NA
+CACNA2D3•unc-36(ad698)	CACNA2D3	Rare Single Gene Mutation	2	0	ASD predominant	FDR _ 0.1	Neuronal communication
+CACNA2D3•unc-36(e251)	CACNA2D3	Rare Single Gene Mutation	2	0	ASD predominant	FDR _ 0.1	Neuronal communication
+CDKL5•cdkl-1(ok2694)	CDKL5	Rare Single Gene Mutation, Syndromic	NA	1	NA	NA	NA
+CELF4•unc-75(e950)	CELF4	Rare Single Gene Mutation, Functional	3	0	ASD predominant	FDR _ 0.05	Gene expression regulation
+CELF4•unc-75(tm9711)	CELF4	Rare Single Gene Mutation, Functional	3	0	ASD predominant	FDR _ 0.05	Gene expression regulation
+CHD2•chd-1(ok2798)	CHD2	Rare Single Gene Mutation, Syndromic	1	1	ASD & NDD	FWER _ 0.05	Gene expression regulation
+CHD8•chd-7(gk306)	CHD8	Rare Single Gene Mutation, Functional	1	1	ASD predominant	FWER _ 0.05	Gene expression regulation
+CLASP1•cls-3(ok3375)	CLASP1	Rare Single Gene Mutation	3	0	NA	NA	NA
+CLASP1•cls-3(tm5775)	CLASP1	Rare Single Gene Mutation	3	0	NA	NA	NA
+CORO1A•cor-1(ok869)	CORO1A	NA	NA	NA	ASD predominant	FDR _ 0.1	Cytoskeleton
+CREBBP•cbp-1(ku258)	CREBBP	Rare Single Gene Mutation, Syndromic, Genetic Association	5	0	ASD & NDD	FDR _ 0.05	Gene expression regulation
+CTNNB1•bar-1(ga80)	CTNNB1	Rare Single Gene Mutation, Syndromic	3	0	ASD & NDD	FWER _ 0.05	Gene expression regulation
+CTNNB1•bar-1(mu63)	CTNNB1	Rare Single Gene Mutation, Syndromic	3	0	ASD & NDD	FWER _ 0.05	Gene expression regulation
+CTNNB1•hmp-2(qm39)	CTNNB1	Rare Single Gene Mutation, Syndromic	3	0	ASD & NDD	FWER _ 0.05	Gene expression regulation
+CTNND2•jac-1(ok3000)	CTNND2	Rare Single Gene Mutation	2	0	NA	NA	NA
+DHCR7•dhcr-7(tm6473)	DHCR7	Rare Single Gene Mutation, Syndromic	NA	1	NA	NA	NA
+DIP2A•dip-2(ok885)	DIP2A	Rare Single Gene Mutation	3	0	ASD predominant	FDR _ 0.1	Neuronal communication
+DMD•dys-1(cx18)	DMD	Rare Single Gene Mutation, Syndromic, Genetic Association	NA	1	NA	NA	NA
+DMPK•mrck-1(ok586)	DMPK	Rare Single Gene Mutation, Syndromic	NA	1	NA	NA	NA
+DPYSL2•dhp-1(tm1072)	DPYSL2	Rare Single Gene Mutation, Genetic Association	3	0	ASD predominant	FDR _ 0.05	Cytoskeleton
+DSCAM•igcm-1(ok711)	DSCAM	Rare Single Gene Mutation, Genetic Association	1	0	ASD predominant	FWER _ 0.05	Neuronal communication
+DST•vab-10(e698)	DST	Rare Single Gene Mutation	4	0	NA	NA	NA
+DST•vab-10(gk45)	DST	Rare Single Gene Mutation	4	0	NA	NA	NA
+DYRK1A•mbk-1(pk1389)	DYRK1A	Rare Single Gene Mutation, Syndromic, Functional	1	1	ASD & NDD	FWER _ 0.05	Cytoskeleton
+EHMT1•set-11(n4488)	EHMT1	Rare Single Gene Mutation, Syndromic	3	1	NA	NA	NA
+ELAVL3•exc-7(ok370)	ELAVL3	Rare Single Gene Mutation	3	0	ASD predominant	FDR _ 0.1	Gene expression regulation
+ELAVL3•exc-7(rh252)	ELAVL3	Rare Single Gene Mutation	3	0	ASD predominant	FDR _ 0.1	Gene expression regulation
+FAT1/FAT3•cdh-1(gk747)	FAT1	Rare Single Gene Mutation	4	0	NA	NA	NA
+FAT1/FAT3•cdh-4(hd40)	FAT1/FAT3	Rare Single Gene Mutation	4	0	NA	NA	NA
+FAT1/FAT3•cdh-4(ok1323)	FAT1/FAT3	Rare Single Gene Mutation	4	0	NA	NA	NA
+FOXP1•fkh-7(gk793)	FOXP1	Rare Single Gene Mutation, Syndromic, Genetic Association, Functional	2	1	ASD & NDD	FWER _ 0.05	Gene expression regulation
+GABRB2/3•gab-1(gk189051)	GABRB2/3	Rare Single Gene Mutation, Genetic Association	2	0	ASD & NDD	FDR _ 0.05	Neuronal communication
+GABRB2/3•gab-1(tm3577)	GABRB2/3	Rare Single Gene Mutation, Genetic Association	2	0	ASD & NDD	FDR _ 0.05	Neuronal communication
+GAPVD1•rme-6(b1014)	GAPVD1	NA	NA	NA	NA	NA	NA
+GAPVD1•rme-6(tm6649)	GAPVD1	NA	NA	NA	NA	NA	NA
+GIGYF1•C18H9.3(tm4671)	GIGYF1	Rare Single Gene Mutation	3	0	ASD predominant	FWER _ 0.05	Other
+GNAI1•gpa-16(ok2349)	GNAI1	NA	NA	NA	ASD & NDD	FDR _ 0.05	Other
+GRIA2•glr-1(n2461)	GRIA2	NA	NA	NA	ASD predominant	FDR _ 0.1	Neuronal communication
+GRIA2•glr-2(ok2342)	GRIA2	NA	NA	NA	ASD predominant	FDR _ 0.1	Neuronal communication
+GRIN2B•nmr-2(ok3324)	GRIN2B	Rare Single Gene Mutation, Syndromic, Genetic Association	1	0	ASD & NDD	FWER _ 0.05	Neuronal communication
+HDAC4•hda-4(ok518)	HDAC4	Rare Single Gene Mutation, Syndromic, Genetic Association	NA	1	NA	NA	NA
+IRF2BPL•tag-260(ok1339)	IRF2BPL	Rare Single Gene Mutation, Syndromic	2	1	ASD & NDD	FDR _ 0.05	Gene expression regulation
+KAT2B•pcaf-1(tm3318)	KAT2B	Rare Single Gene Mutation	2	0	NA	NA	NA
+KCNJ10•irk-3(gk542081)	KCNJ10	Rare Single Gene Mutation, Syndromic, Genetic Association	3	0	NA	NA	NA
+KCNJ10•irk-3(tm7416)	KCNJ10	Rare Single Gene Mutation, Syndromic, Genetic Association	3	0	NA	NA	NA
+KCNMA1•slo-1(eg142)	KCNMA1	Rare Single Gene Mutation	4	0	ASD predominant	FDR _ 0.1	Neuronal communication
+KCNMA1•slo-1(js118)	KCNMA1	Rare Single Gene Mutation	4	0	ASD predominant	FDR _ 0.1	Neuronal communication
+KCNMA1•slo-1(js379)	KCNMA1	Rare Single Gene Mutation	4	0	ASD predominant	FDR _ 0.1	Neuronal communication
+KCNQ3•kqt-1(tm8384)	KCNQ3	Rare Single Gene Mutation, Genetic Association	3	0	ASD & NDD	FDR _ 0.05	Neuronal communication
+KCNQ3•kqt-1(tm846)	KCNQ3	Rare Single Gene Mutation, Genetic Association	3	0	ASD & NDD	FDR _ 0.05	Neuronal communication
+KDM5B•rbr-2(ok2544)	KDM5B	Rare Single Gene Mutation, Syndromic, Functional	2	0	ASD predominant	FDR _ 0.05	Gene expression regulation
+KDM6B•jmjd-3.3(tm3104)	KDM6B	Rare Single Gene Mutation	3	0	ASD predominant	FWER _ 0.05	Gene expression regulation
+KDM6B•jmjd-3.3(tm3197)	KDM6B	Rare Single Gene Mutation	3	0	ASD predominant	FWER _ 0.05	Gene expression regulation
+KMT2C•set-16(gk190875)	KMT2C	Rare Single Gene Mutation, Syndromic	2	1	ASD predominant	FDR _ 0.05	Gene expression regulation
+KMT5B•set-4(ok1481)	KMT5B	Rare Single Gene Mutation, Syndromic	1	0	ASD predominant	FWER _ 0.05	Gene expression regulation
+LRRC4C•lron-8(tm8188)	LRRC4C	NA	NA	NA	ASD & NDD	FDR _ 0.1	Neuronal communication
+MED13L•let-19(gk149538)	MED13L	Rare Single Gene Mutation, Syndromic	2	1	ASD & NDD	FWER _ 0.05	Gene expression regulation
+MET•F11E6.8(ok2754)	MET	Rare Single Gene Mutation, Genetic Association, Functional	2	0	NA	NA	NA
+MKX•irx-1(tm238)	MKX	NA	NA	NA	ASD predominant	FDR _ 0.05	Gene expression regulation
+MPP6•C50F2.8(ok533)	MPP6	Rare Single Gene Mutation	4	0	NA	NA	NA
+MYT1L•ztf-11(ok646)	MYT1L	Rare Single Gene Mutation, Syndromic, Genetic Association	1	0	ASD & NDD	FDR _ 0.05	Gene expression regulation
+NCKAP1•gex-3(zu196)	NCKAP1	Rare Single Gene Mutation	2	0	NA	NA	NA
+NLGN1/2/3/4X•nlg-1(ok259)	NLGN1/2/3/4X	Rare Single Gene Mutation	2	0	NA	NA	NA
+NRXN1/2/3•nrx-1(ds1)	NRXN1/2/3	Rare Single Gene Mutation, Syndromic, Genetic Association	2	0	ASD predominant	FDR _ 0.05	Neuronal communication
+NRXN1/2/3•nrx-1(ok1649)	NRXN1/2/3	Rare Single Gene Mutation, Syndromic, Genetic Association	2	0	ASD predominant	FDR _ 0.05	Neuronal communication
+NSD1•met-1(gk510)	NSD1	Rare Single Gene Mutation, Syndromic	NA	1	ASD & NDD	FDR _ 0.05	Gene expression regulation
+NSD1•met-1(n4337)	NSD1	Rare Single Gene Mutation, Syndromic	NA	1	ASD & NDD	FDR _ 0.05	Gene expression regulation
+NSD1•met-1(ok2172)	NSD1	Rare Single Gene Mutation, Syndromic	NA	1	ASD & NDD	FDR _ 0.05	Gene expression regulation
+NTNG1•epi-1(gm57)	NTNG1	Rare Single Gene Mutation, Syndromic, Genetic Association	4	1	NA	NA	NA
+PAX5•npax-2(tm2107)	PAX5	Rare Single Gene Mutation	3	0	ASD predominant	FDR _ 0.05	Gene expression regulation
+PAX5•pax-2(ok3078)	PAX5	Rare Single Gene Mutation	3	0	ASD predominant	FDR _ 0.05	Gene expression regulation
+PAX5•pax-2(ok935)	PAX5	Rare Single Gene Mutation	3	0	ASD predominant	FDR _ 0.05	Gene expression regulation
+PAX5•pax-2(ok946)	PAX5	Rare Single Gene Mutation	3	0	ASD predominant	FDR _ 0.05	Gene expression regulation
+PHF2•jmjd-1.1(hc184)	PHF2	Rare Single Gene Mutation	3	0	ASD predominant	FDR _ 0.05	Gene expression regulation
+POGZ•row-1(tm556)	POGZ	Rare Single Gene Mutation, Syndromic	1	1	ASD & NDD	FWER _ 0.05	Gene expression regulation
+PPP1R9B•nab-1(gk164)	PPP1R9B	NA	NA	NA	ASD predominant	FDR _ 0.1	Neuronal communication
+PPP1R9B•nab-1(ok943)	PPP1R9B	NA	NA	NA	ASD predominant	FDR _ 0.1	Neuronal communication
+PPP2R5D•pptr-2(ok1467)	PPP2R5D	Rare Single Gene Mutation, Syndromic	4	1	ASD & NDD	FDR _ 0.05	Gene expression regulation
+PPP5C•pph-5(ok3498)	PPP5C	NA	NA	NA	ASD predominant	FDR _ 0.1	Other
+PRKD1•dkf-1(ok2695)	PRKD1	Rare Single Gene Mutation, Syndromic	NA	1	NA	NA	NA
+PTCHD1•daf-6(e1377)	PTCHD1	Rare Single Gene Mutation, Genetic Association	2	0	NA	NA	NA
+PTCHD1•ptr-10(ok2106)	PTCHD1	Rare Single Gene Mutation, Genetic Association	2	0	NA	NA	NA
+PTCHD1•ptr-6(ok2988)	PTCHD1	Rare Single Gene Mutation, Genetic Association	2	0	NA	NA	NA
+PTEN•daf-18(e1375)	PTEN	Rare Single Gene Mutation, Syndromic, Functional	1	1	ASD predominant	FWER _ 0.05	Neuronal communication
+PTEN•daf-18(ok480)	PTEN	Rare Single Gene Mutation, Syndromic, Functional	1	1	ASD predominant	FWER _ 0.05	Neuronal communication
+RIMS1•unc-10(e102)	RIMS1	Rare Single Gene Mutation, Genetic Association	2	0	NA	NA	NA
+RIMS1•unc-10(md1117)	RIMS1	Rare Single Gene Mutation, Genetic Association	2	0	NA	NA	NA
+SBF1•mtm-5(ok469)	SBF1	Rare Single Gene Mutation	3	0	NA	NA	NA
+SETD5•set-24(n4909)	SETD5	Rare Single Gene Mutation, Syndromic	1	1	ASD & NDD	FDR _ 0.05	Gene expression regulation
+SETD5•set-9(n4949)	SETD5	Rare Single Gene Mutation, Syndromic	1	1	ASD & NDD	FDR _ 0.05	Gene expression regulation
+SHANK1/2/3•shn-1(gk181)	SHANK1/2/3	Rare Single Gene Mutation, Syndromic, Genetic Association, Functional	1	1	ASD predominant	FWER _ 0.05	Neuronal communication
+SHANK1/2/3•shn-1(ok1241)	SHANK1/2/3	Rare Single Gene Mutation, Syndromic, Genetic Association, Functional	1	1	ASD predominant	FWER _ 0.05	Neuronal communication
+SIN3A•sin-3(tm1276)	SIN3A	Rare Single Gene Mutation, Syndromic	4	1	ASD & NDD	FDR _ 0.05	Gene expression regulation
+SLC6A1•snf-11(ok156)	SLC6A1	Rare Single Gene Mutation, Syndromic, Genetic Association	2	1	ASD & NDD	FWER _ 0.05	Neuronal communication
+SLC9A6•nhx-5(ok661)	SLC9A6	Rare Single Gene Mutation, Syndromic, Functional	NA	1	NA	NA	NA
+SPAG9•unc-16(e109)	SPAG9	NA	NA	NA	NA	NA	NA
+SPAG9•unc-16(n730)	SPAG9	NA	NA	NA	NA	NA	NA
+SPAST•spas-1(ok1608)	SPAST	Rare Single Gene Mutation	2	0	ASD predominant	FDR _ 0.05	Cytoskeleton
+SPAST•spas-1(tm683)	SPAST	Rare Single Gene Mutation	2	0	ASD predominant	FDR _ 0.05	Cytoskeleton
+STXBP1•unc-18(e234)	STXBP1	Rare Single Gene Mutation, Syndromic, Functional	3	1	ASD & NDD	FDR _ 0.05	Neuronal communication
+STXBP1•unc-18(e81)	STXBP1	Rare Single Gene Mutation, Syndromic, Functional	3	1	ASD & NDD	FDR _ 0.05	Neuronal communication
+STXBP1•unc-18(md299)	STXBP1	Rare Single Gene Mutation, Syndromic, Functional	3	1	ASD & NDD	FDR _ 0.05	Neuronal communication
+SYNE1•anc-1(e1753)	SYNE1	Rare Single Gene Mutation, Genetic Association	4	1	NA	NA	NA
+SYNE1•anc-1(e1802)	SYNE1	Rare Single Gene Mutation, Genetic Association	4	1	NA	NA	NA
+SYNGAP1•gap-2(ok1001)	SYNGAP1	Rare Single Gene Mutation, Syndromic	1	1	ASD & NDD	FWER _ 0.05	Neuronal communication
+SYNGAP1•gap-2(tm748)	SYNGAP1	Rare Single Gene Mutation, Syndromic	1	1	ASD & NDD	FWER _ 0.05	Neuronal communication
+TBR1•tbx-38(gk186909)	TBR1	Rare Single Gene Mutation, Genetic Association	1	0	ASD predominant	FDR _ 0.05	Gene expression regulation
+TBR1•tbx-38(tm581)	TBR1	Rare Single Gene Mutation, Genetic Association	1	0	ASD predominant	FDR _ 0.05	Gene expression regulation
+TCF7L2•pop-1(tm6676)	TCF7L2	Rare Single Gene Mutation	3	0	ASD & NDD	FDR _ 0.05	Gene expression regulation
+TEK•R151.1(ok2347)	TEK	NA	NA	NA	ASD predominant	FDR _ 0.1	Other
+TM9SF4•ZK858.6(ok2921)	TM9SF4	NA	NA	NA	ASD predominant	FDR _ 0.05	Other
+TM9SF4•ZK858.6(ok3464)	TM9SF4	NA	NA	NA	ASD predominant	FDR _ 0.05	Other
+TSC2•hgap-1(gk101481)	TSC2	Rare Single Gene Mutation, Syndromic, Genetic Association	3	1	NA	NA	NA
+UBR4•ubr-4(gk109613)	UBR4	NA	NA	NA	NA	NA	NA
+UBR4•ubr-4(tm3968)	UBR4	NA	NA	NA	NA	NA	NA
+UPF3B•smg-4(gk244058)	UPF3B	Rare Single Gene Mutation, Syndromic	2	1	NA	NA	NA
+UPF3B•smg-4(tm5409)	UPF3B	Rare Single Gene Mutation, Syndromic	2	1	NA	NA	NA
+USP7•math-33(tm6724)	USP7	Rare Single Gene Mutation, Syndromic	2	1	NA	NA	NA
+VEZF1•M03D4.4(tm10242)	VEZF1	NA	NA	NA	ASD & NDD	FDR _ 0.05	Gene expression regulation
+VEZF1•M03D4.4(tm559)	VEZF1	NA	NA	NA	ASD & NDD	FDR _ 0.05	Gene expression regulation
+VPS13B•C25H3.11(gk425293)	VPS13B	Rare Single Gene Mutation, Syndromic	NA	1	NA	NA	NA
+ZBTB20•ztf-6(gk122271)	ZBTB20	Rare Single Gene Mutation, Syndromic	3	1	NA	NA	NA
+ZBTB20•ztf-6(tm1803)	ZBTB20	Rare Single Gene Mutation, Syndromic	3	1	NA	NA	NA
+ZMYND8•bra-1(nk1)	ZMYND8	NA	NA	NA	ASD predominant	FDR _ 0.05	Gene expression regulation

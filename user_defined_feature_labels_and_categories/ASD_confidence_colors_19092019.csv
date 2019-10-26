@@ -1,0 +1,6 @@
+Class,Colour
+FWER ≤ 0.05,dodgerblue2
+FDR ≤ 0.05,#76b6f4
+FDR ≤ 0.1,#d1e6fb
+None,gray39
+Wild-type•N2,black
