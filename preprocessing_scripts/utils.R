@@ -12,6 +12,7 @@ library("RColorBrewer")
 library("Rtsne")
 library("plot3D")
 library("Cairo")
+library("dendsort")
 
 source("preprocessing_scripts/constants.utils.R")
 source("preprocessing_scripts/sugar.utils.R")

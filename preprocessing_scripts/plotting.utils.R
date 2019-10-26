@@ -17,6 +17,31 @@ feature.labels = read.csv(
   stringsAsFactors = F
 )
 
+## ASD-catergory Labels classes and colorus
+ASD_CONFIDENCE_CATEGORIES = read.csv(config::get("asd-confidence-categories"), sep = '\t' )
+
+asd_confidence_df = ASD_CONFIDENCE_CATEGORIES[ , c("Allele", "Satterstrom.et.al..Evidence.for.ASD.association")]
+names(asd_confidence_df) <- c("Allele", "Class")
+
+asd_ndd_category_df = ASD_CONFIDENCE_CATEGORIES[ , c("Allele", "Satterstrom.et.al.ASD.NDD.class")]
+names(asd_ndd_category_df) <- c("Allele", "Class")
+
+levels(asd_confidence_df$Class) <- c(levels(asd_confidence_df$Class), "None")
+levels(asd_ndd_category_df$Class) <- c(levels(asd_ndd_category_df$Class), "None")
+
+asd_confidence_df[is.na(asd_confidence_df)] <- "None"
+asd_ndd_category_df[is.na(asd_ndd_category_df)] <- "None"
+
+asd_ndd_category_colors_df = read.csv(config::get("asd-categories-colors"))
+asd_confidence_colors_df = read.csv(config::get("asd-confidence-colors"))
+##############################
+
+## ASD-association confidence Labels classes and colorus
+
+##############################
+
+
+
 feature.class.colors=NULL
 feature.class = NULL
 feature.class.groups = NULL
@@ -55,9 +80,19 @@ iheatmapper <- function(X,
                         useGroups = NULL,
                         titleName = "Multiworm Tracker Features",
                         valuesNames = "Values",
+                        useClustering = c( "both","rows", "columns","none"),
                         ...) {
   # Generate a heatmap
   X <- as.matrix(X)
+  
+  if (is.null(c(useClustering)[1])){
+    useClustering = "none"
+  } else if (c(useClustering)[1] == TRUE) {
+    useClustering = "both"
+  } else {
+    useClustering <- match.arg(useClustering)
+  }
+  
   loadHeatmapFeatureColors(X)
   
   colnames(X) <- translate(colnames(X), dictionary = "features")
@@ -112,14 +147,20 @@ iheatmapper <- function(X,
     )
   
   if (is.null(useGroups)) {
-    p <- p %>%
-      add_row_clustering(method = "hclust",
-                         side = "right",
-                         name = "Variant clustering") %>%
-      add_col_clustering(method = "hclust",
-                         name = "Feature clustering",
-                         side = "top")
+    ## Use built-in clustering
+    if (useClustering %in% c("rows", "both") ) {
+      p <- p %>% add_row_clustering(method = "hclust",
+                                    side = "right",
+                                    name = "Variant clustering")
+    }
+    if (useClustering %in% c("columns", "both") ){
+      p <- p %>% add_col_clustering(method = "hclust",
+                                    name = "Feature clustering",
+                                    side = "top") 
+    }    
+    
   } else{
+    ## Use specific groups for "grouping" instead of clustering
     useGroups <-
       useGroups[order(useGroups$group, as.character(useGroups$gene)), ]
     class <- setColorClass(X, clusters = useGroups)
@@ -306,6 +347,7 @@ phenotypePlotByMean <-
            showLabels=T,
            limitOutlier=NULL,
            seed = NA,
+           useClass=NULL,
            repulsion = 30) {
     
     X<-data.frame(X)
@@ -313,13 +355,13 @@ phenotypePlotByMean <-
     isWT <- grep(x=rownames(X), pattern = "^N2") 
     
     X.WT.mean <- mean(X[isWT,c(metric)])
-    X.WT.CI.hi.hi <- max(confidence.hi[grepl("^N2.", x = rownames(confidence.hi)),metric])
-    X.WT.CI.hi.lo <- min(confidence.hi[grepl("^N2.", x = rownames(confidence.hi)),metric])
+    X.WT.CI.hi.hi <- 0 # max(confidence.hi[grepl("^N2.", x = rownames(confidence.hi)),metric])
+    X.WT.CI.hi.lo <- 0 #  min(confidence.hi[grepl("^N2.", x = rownames(confidence.hi)),metric])
     
-    X.WT.CI.lo.hi <- max(confidence.lo[grepl("^N2.", x = rownames(confidence.lo)),metric])
-    X.WT.CI.lo.lo <- min(confidence.lo[grepl("^N2.", x = rownames(confidence.lo)),metric])
+    X.WT.CI.lo.hi <- 0 #  max(confidence.lo[grepl("^N2.", x = rownames(confidence.lo)),metric])
+    X.WT.CI.lo.lo <- 0 #min(confidence.lo[grepl("^N2.", x = rownames(confidence.lo)),metric])
     # Remove wts and replace with mean
-    X[isWT, metric] = X.WT.mean
+    X[isWT, metric] = 0 #X.WT.mean # 0 because the mean value is the "difference" in the mean, so WT should be 0
     # confidence.hi[isWT, metric] = 0.0
     # confidence.lo[isWT, metric] = 0.0
     # pvalues[isWT, metric] = 0.0
@@ -339,7 +381,8 @@ phenotypePlotByMean <-
     
     outlier <- translate(rownames(X)) # Convert labels first
     
-    outlier[  ( X[,metric] >= X.WT.mean & confidence.lo[,metric] <= X.WT.mean ) |
+    outlier[  (outlier == translate("N2")) &
+                ( X[,metric] >= X.WT.mean & confidence.lo[,metric] <= X.WT.mean ) |
                 ( X[,metric] <= X.WT.mean & confidence.hi[,metric] >= X.WT.mean ) ] <- ""
     
     # class[  rownames(X) != "N2" & (( X[,metric] >= 0 & confidence.lo[,metric] <= 0 ) |
@@ -349,13 +392,39 @@ phenotypePlotByMean <-
     # names(colourScheme)[  rownames(X) != "N2" & (( X[,metric] >= 0 & confidence.lo[,metric] <= 0 ) |
     #                                                       ( X[,metric] <= 0 & confidence.hi[,metric] >= 0 )) ] <- "ASD (n.s.)"
     
-    class[  rownames(X) != "N2" & (( X[,metric] >= X.WT.mean & confidence.lo[,metric] <= X.WT.mean ) |
-                                     ( X[,metric] <= X.WT.mean & confidence.hi[,metric] >= X.WT.mean )) ] <- "ASD (n.s.)"
-    colourScheme[  rownames(X) != "N2" & (( X[,metric] >= X.WT.mean & confidence.lo[,metric] <= X.WT.mean ) |
-                                            ( X[,metric] <= X.WT.mean & confidence.hi[,metric] >= X.WT.mean )) ] <- "gray39"
-    names(colourScheme)[  rownames(X) != "N2" & (( X[,metric] >= X.WT.mean & confidence.lo[,metric] <= X.WT.mean ) |
-                                                   ( X[,metric] <= X.WT.mean & confidence.hi[,metric] >= X.WT.mean )) ] <- "ASD (n.s.)"
-    
+    if ( is.null( useClass ) ){
+      class[  rownames(X) != "N2" & (( X[,metric] >= X.WT.mean & confidence.lo[,metric] <= X.WT.mean ) |
+                                       ( X[,metric] <= X.WT.mean & confidence.hi[,metric] >= X.WT.mean )) ] <- "ASD (n.s.)"
+      colourScheme[  rownames(X) != "N2" & (( X[,metric] >= X.WT.mean & confidence.lo[,metric] <= X.WT.mean ) |
+                                              ( X[,metric] <= X.WT.mean & confidence.hi[,metric] >= X.WT.mean )) ] <- "gray39"
+      names(colourScheme)[  rownames(X) != "N2" & (( X[,metric] >= X.WT.mean & confidence.lo[,metric] <= X.WT.mean ) |
+                                                     ( X[,metric] <= X.WT.mean & confidence.hi[,metric] >= X.WT.mean )) ] <- "ASD (n.s.)"
+      
+    } else if (useClass == "asd_ndd_class") {
+      
+      class = mapvalues(translate(rownames(X)), from = asd_ndd_category_df$Allele, to = as.character(asd_ndd_category_df$Class))
+      colourScheme = mapvalues(class, from = asd_ndd_category_colors_df$Class, to = as.character(asd_ndd_category_colors_df$Colour))
+      colourSchemeOutline = colourScheme
+      colourSchemeOutline[colourSchemeOutline == "#FFFFFE"] <- as.character(asd_ndd_category_colors_df$Colour[asd_ndd_category_colors_df$Class == "ASD predominant"])
+      names(colourScheme) = class
+      names(colourSchemeOutline) <- class
+
+    } else if (useClass == "asd_confidence") {
+      # asd_confidence_df =
+      
+      class = mapvalues(translate(rownames(X)), from = asd_confidence_df$Allele, to = as.character(asd_confidence_df$Class))
+      class = gsub(class, pattern = "_", replacement = "≤")
+      # class <- factor(class, levels = c("FWER ≤ 0.05", "FDR ≤ 0.05", "FDR ≤ 0.1", "None", "Wild-type•N2"))
+      
+      colourScheme = mapvalues(class, from = asd_confidence_colors_df$Class, to = as.character(asd_confidence_colors_df$Colour))
+      colourSchemeOutline = colourScheme
+      # colourSchemeOutline[class == "FDR ≤ 0.05"] <- "dodgerblue2" # TODO: Generalize like above
+      # colourSchemeOutline[class == "FDR ≤ 0.1"] <- "black" # TODO: Generalize like above
+      names(colourScheme) = class
+      names(colourSchemeOutline) <- class
+      
+    }
+      
     ORDER = rank( X[,c(metric)], ties.method = "first")
     
     p <- ggplot(X, 
@@ -363,7 +432,7 @@ phenotypePlotByMean <-
                     y=X[,c(metric)]
                 ))  
     
-    if (!showLabels){
+    if (!showLabels){ #FIXME: THis probably isn't the most descriptive switch.
       ## WT hbar
       p = p +
         geom_hline(yintercept = X.WT.CI.hi.hi,
@@ -378,9 +447,22 @@ phenotypePlotByMean <-
     }
     
     p = p + 
+      geom_errorbar(aes(ymin=confidence.lo[,c(metric)], ymax=confidence.hi[,c(metric)], colour=class), 
+                    width=DEFAULT_LN_WIDTH,
+                    size=DEFAULT_LN_SIZE,
+                    position=position_dodge(.9)) + 
       geom_point(size = DEFAULT_PT_SIZE/1.8, 
-                 mapping = aes(colour=class)
-      ) + 
+                 mapping = aes(colour=class,
+                               fill=class),
+                 
+                 shape=21
+                 
+      ) +
+      geom_point(x=ORDER[grep("^N2$", rownames(X))],
+                 y=X["N2",c(metric)],
+                 size = DEFAULT_PT_SIZE/1.8,
+                 colour=colourScheme[translate("N2")]
+      ) +
       theme_classic() +
       theme(text=element_text(family="Arial")) +
       # geom_hline(aes(yintercept=Z3up),  size=DEFAULT_LN_SIZE, linetype='longdash') +
@@ -390,18 +472,8 @@ phenotypePlotByMean <-
            subtitle= "", 
            x="Genotypes", 
            y = paste("Sample mean distance from wild-type" ) ) + 
-      scale_fill_manual(name="Group", values = colourScheme, guide = F)  +
-      scale_color_manual(name="Group", values = colourScheme)
-    
-    #    if (!is.null(confidence)){
-    if (T){
-      p <- p +
-        geom_errorbar(aes(ymin=confidence.lo[,c(metric)], ymax=confidence.hi[,c(metric)], colour=class), 
-                      width=DEFAULT_LN_WIDTH,
-                      size=DEFAULT_LN_SIZE,
-                      position=position_dodge(.9)
-        )
-    }
+      scale_fill_manual(name="Group", values = colourScheme) +
+      scale_color_manual(name="Group", values = colourSchemeOutline,guide = FALSE) 
     
     if (showLabels && length(outlier) != sum(as.numeric(outlier %in% ""))) { # Are there any outliers to show?
       if (!is.null(limitOutlier)){
@@ -417,34 +489,72 @@ phenotypePlotByMean <-
         }
         LABEL.SAVED = unique(c(LABEL.LEFT, LABEL.RIGHT))
         LABEL.PRUNE = setdiff(outlier, c(LABEL.SAVED, ""))
+        
+        # LABEL.PRUNE = setdiff(LABEL.PRUNE, translate("N2")) # Keep N2
+        LABEL.PRUNE = c(LABEL.PRUNE, translate("N2")) # Remove N2
+        
         outlier[outlier %in% LABEL.PRUNE] <- ""
       }
-      textcolours <- class
-      textcolours[class == "Wildtype"] <- "white"
-      textcolours[class != "Wildtype"] <- "black"
       
+      # textcolours <- class
+      # textcolours[T] <- "black"
+      # textcolours[colourScheme == "white"] <- "black"
+      textcolours = colourScheme
+      # textcolours[class == "FWER ≤ 0.05"] <- "white"
+      fillcolours <- class
+      fillcolours[T] <- NA
+      # fillcolours[ class != "FWER ≤ 0.05" ] <- NA
+      # fillcolours[ class == "FWER ≤ 0.05" ] <- "dodgerblue2"
+      # alphacolours = fillcolours
+      # alphacolours[ class == "FWER ≤ 0.05" ] <- 0.5
       # NUDGER = max(c( confidence.hi[,c(metric)], confidence.lo[,c(metric)])) - quantile( c( confidence.hi[,c(metric)], confidence.lo[,c(metric)]), probs = 0.85)
       NUDGER = quantile( confidence.hi[,c(metric)] - X[,metric], probs = 0.80)
       p <- p +
+        # This repel was used to make transparent labels. Removed for now.
+        # geom_label_repel(aes(ORDER,
+        #                      X[,c(metric)]
+        #                      
+        # ),
+        # fill=fillcolours, #c(NA),
+        # label=outlier,
+        # alpha=alphacolours,
+        # seed = seed,
+        # size = 7,
+        # force = repulsion,
+        # box.padding = unit(0.35, "lines"),
+        # point.padding = unit(0.5, "lines"),
+        # segment.color = 'black',
+        # colour = textcolours,
+        # fontface = "bold", 
+        # show.legend = FALSE,
+        # max.iter = 3e3,
+        # nudge_y = ifelse(ORDER %% 2 == 0, -1 * NUDGER, NUDGER)
+        # ) +
+        
         geom_label_repel(aes(ORDER,
-                             X[,c(metric)],
-                             label = outlier,
-                             fill = class
+                             X[,c(metric)]
                              
         ),
-        color = 'white', seed = seed,
+        fill=c(NA),
+        label=outlier,
+        seed = seed,
         size = 7,
         force = repulsion,
         box.padding = unit(0.35, "lines"),
         point.padding = unit(0.5, "lines"),
         segment.color = 'black',
-        colour = textcolours, 
-        fontface = "bold",
+        colour = textcolours,
+        fontface = "bold", 
+        show.legend = FALSE,
         max.iter = 3e3,
         nudge_y = ifelse(ORDER %% 2 == 0, -1 * NUDGER, NUDGER)
-        )  
+        ) 
+      
+      
       
     }
+    
+    p = p + guides(colour = guide_legend(override.aes = list(shape = 21))) # Override shape that couldn't be aes'ted
     
     p = p +
       theme(axis.text.x = element_blank(),
@@ -516,11 +626,18 @@ getColoursForClass <- function(X){
 
 correlationHeatmap <-
   # pheatmap based correlation heatmaps
-  function(X, title, zmin=-1.0, zmax=1.0, border_color = NA, ...){
+  function(X,  title, zmin=-1.0, zmax=1.0, border_color = NA, ...){
     
     loadHeatmapFeatureColors(X)
     feature.class.df = data.frame(Feature=  feature.class$Class) # Set globally.
     rownames(feature.class.df) <- feature.class$Feature
+    
+    mat_cluster_cols <- hclust(dist(t(X), method = "maximum" ))
+    
+    # Pretify the dendrogram by preclustering and sorting using dendsort
+    sort_hclust <- function(...) as.hclust(dendsort(as.dendrogram(...), isReverse = FALSE))
+    mat_cluster_cols <- sort_hclust(mat_cluster_cols)
+    
     p <- 
       pheatmap(X,
                labels_row = translate(rownames(X), dictionary = "features"),
@@ -528,6 +645,8 @@ correlationHeatmap <-
                color = colorRampPalette(HM_COLORS)(20),
                breaks = seq(zmin, zmax, length = 21),
                na_col = 'black',
+               cluster_cols  = mat_cluster_cols,
+               cluster_rows = mat_cluster_cols,
                annotation_col = feature.class.df,
                annotation_colors = list( Feature = unlist(feature.class.colormap) ),
                fontsize = 10,
@@ -545,7 +664,8 @@ tstatBarPerGene <-
   function(t.stat=NULL,
            strain=NULL,
            class=NULL,
-           THRESHOLD=0.05) {
+           THRESHOLD=0.05,
+           clip_t=20) {
     
     
     reordering = (as.character(sapply(colnames(t.stat), function(x) feature.class$Class[feature.class$Feature == x][1] )))
@@ -566,8 +686,8 @@ tstatBarPerGene <-
     colourScheme = feature.class.colors
     colourScheme = names(class.colors)
     
-    MINY <- quantile(t.stat, probs = 0.01) #min(t.stat)
-    MAXY <- quantile(t.stat, probs = 0.99) #max(t.stat)
+    MINY <- ifelse(is.null(clip_t), quantile(t.stat, probs = 0.01), -1*clip_t) #min(t.stat)
+    MAXY <- ifelse(is.null(clip_t), quantile(t.stat, probs = 0.99), clip_t) #max(t.stat)
     X$Value <- fence(X$Value, UB=MAXY, LB=MINY)
     
     X = X[order(X$Groups),]
@@ -587,7 +707,7 @@ tstatBarPerGene <-
       scale_fill_manual(name="Feature type", labels = unique(X$Groups), values = unique(X$Colors) ) +
       # scale_x_discrete(labels=translate(as.character(X$Metric), dictionary = "features"))+
       theme(axis.text.x = element_text(angle=60, hjust=1, size=10,face = "bold", colour = 'black')) +
-      ylab(label = "T-Statistic") +
+      ylab(label = "t-statistic") +
       ggtitle(paste0("Phenotypic profile for ", translate(strain, dictionary = "alleles") )) + 
       TITLE_SIZES + 
       DEFAULT_FONT
@@ -654,3 +774,4 @@ function(...,
 }
 
 
+sort_hclust <- function(...) as.hclust(dendsort(as.dendrogram(...)))
