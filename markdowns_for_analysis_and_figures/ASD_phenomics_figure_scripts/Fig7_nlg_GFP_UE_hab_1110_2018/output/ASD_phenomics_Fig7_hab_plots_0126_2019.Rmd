@@ -1,0 +1,173 @@
+---
+title: "ASD_phenomics_Fig6_auxin_habplots_0126_2019"
+author: "Troy McDiarmid"
+date: "January 26, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+##Load in them libraries
+
+library(tidyverse)
+
+
+```
+
+```{r setup, include=FALSE}
+
+##Bash loop to output reversals from tracker plates
+
+for folder in $( ls ); do Chore --segment --shadowless --pixelsize 0.027 --minimum-move-body 2 --minimum-time 20 --output speed,midline,morphwidth --plugin Reoutline::despike --plugin Respine --plugin MeasureReversal::tap::dt=1::collect=0.5  $folder; done
+
+##Bash argument to grep all .trv files into a summary of reversals
+
+grep -H '[.]*' $(find . -name '*.rev') > data.srev
+
+cd ../..
+
+```
+
+
+
+
+```{r}
+setwd("/Volumes/SAMWISE/Troy/ASD_Phenomics_pub_data/nlg-1_GFP_AID_1110_2018/output")
+
+cleanrawsrev <- read_table2("data.srev", col_names = c("plate_id", "already_rev", "not_rev", "rev", "rev_dist", "dist_sd", "dist_sem", "dist_0_quart", "dist_1st_quart", "dist_2nd_quart", "dist_3rd_quart", "dsit_100th_percentile", "rev_dur", "dur_sd", "dur_sem", "dur_0_quart", "dur_1st_quart", "dur_2nd_quart", "dur_3rd_quart", "dur_100th_percentile"))
+
+cleanrawsrev <- cleanrawsrev %>% 
+  separate(plate_id, into = c("garbage", "genotype", "plate_id", "growth_conditions"), sep ="/") %>% separate(growth_conditions, into = c("growth_conditions", "time"), sep = ":") %>% 
+  select(genotype:dur_100th_percentile)
+
+
+
+##Optional Code to rename your factors
+
+cleanrawsrev$genotype <- recode(cleanrawsrev$genotype, `N2` = "Wild-type (N2)", `VC228` = "nlg-1", `VG880` = "nlg-1::AID::GFP UE", `VG881` = "nlg-1::AID::GFP")
+
+
+##Make time numeric and round time 
+
+cleanrawsrev <- cleanrawsrev %>% mutate(time = as.numeric(time)) %>% 
+  mutate(time = round(time, digits = 0)) 
+
+##Calculate reversal probability
+
+cleanrawsrev <- cleanrawsrev %>% 
+  mutate(rev_prob = rev / (not_rev + rev)) 
+
+##optional code to remove any bad observtions
+
+cleanrawsrev <- cleanrawsrev %>% 
+  filter(!(rev_dist == "0")) 
+
+cleanrawsrev <- cleanrawsrev %>% 
+  filter(!(time == "659")) 
+
+##Calculate reversal speed 
+
+cleanrawsrev <- cleanrawsrev %>%
+  mutate(rev_speed = rev_dist / rev_dur) 
+
+##Reorder factors
+
+cleanrawsrev$genotype <- factor(cleanrawsrev$genotype,
+    levels = c('Wild-type (N2)', 'nlg-1', 'nlg-1::AID::GFP UE', 'nlg-1::AID::GFP', ordered = TRUE))
+
+##Mean rev data
+
+mean_cleanrawsrev <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarize_all(mean) 
+
+
+##Add stim number NOTE: this must be changed to fit your experiment parameters 
+
+mean_cleanrawsrev$stimulus_num <- rep(1:31, times = 4) 
+
+##SD calcs
+
+prob_SD <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(prob_sd = sd(rev_prob))
+
+dur_SD <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(dur_sd = sd(rev_dur))
+
+speed_SD <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(speed_sd = sd(rev_speed))
+
+dist_SD <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(dist_sd = sd(rev_dist))
+
+
+##SEM calcs
+
+prob_SEM <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(prob_sem = sd(rev_prob)/sqrt(length(rev_prob)))
+
+dur_SEM <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(dur_sem = sd(rev_dur)/sqrt(length(rev_dur)))
+
+dist_SEM <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(dist_sem = sd(rev_dist)/sqrt(length(rev_dist)))
+
+speed_SEM <- cleanrawsrev %>% 
+  group_by(genotype, time) %>% 
+  summarise(speed_sem = sd(rev_speed)/sqrt(length(rev_speed)))
+
+
+
+```
+
+
+```{r}
+##NOW TO PLAWT
+ 
+##Mean statistics plots
+
+##NOW TO PLAWT
+ 
+##Mean statistics plots for nlg-1::AID::GFP
+
+##Prob
+
+mean_cleanrawsrev_filt <- mean_cleanrawsrev %>% 
+  filter(genotype %in% c("Wild-type (N2)", "nlg-1::AID::GFP UE"))
+
+prob_SEM_filt <- prob_SEM %>% 
+  filter(genotype %in% c("Wild-type (N2)", "nlg-1::AID::GFP UE"))
+
+ggplot(mean_cleanrawsrev_filt, aes(stimulus_num, rev_prob, colour = genotype)) +
+  theme_classic() + 
+  geom_line(size = 1) + 
+  geom_errorbar(aes(ymin=rev_prob-prob_SEM_filt$prob_sem, ymax=rev_prob+prob_SEM_filt$prob_sem), width = 0, size = 1) +
+  scale_y_continuous(expand = c(0,0),
+                     limits = c(0,1.00)) +
+  geom_point(aes(shape=genotype), size = 4.25, fill = "white", stroke = 1.25) +
+  scale_shape_manual(values=c(16,16,21)) +
+  scale_size_manual(values=c(4.25,4.25,3.75)) +
+  scale_color_manual(values=c("black", "dodgerblue2", "dodgerblue2")) +
+  labs(title = "", x = "Stimulus number", y = "Reversal probability") +
+  theme(axis.line = element_line(colour = 'black', size = 2.25)) +
+  theme(axis.ticks = element_line(colour = "black", size = 2.25)) +
+  theme(axis.ticks.length= unit(.25, "cm")) +
+  theme(axis.text = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.x = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(axis.title.y = element_text(family="Arial", colour = "black", size = 30)) +
+  theme(legend.position="none") +
+  theme(plot.title = element_text(face = "bold", hjust = 0.5)) 
+  ggsave("nlg-1::AID::GFP_UE_functional.jpeg", width = 7, height = 6, path = "/Users/troymcdiarmid/Desktop/ASD_Screen_materials")
+  
+
+
+
+```
+

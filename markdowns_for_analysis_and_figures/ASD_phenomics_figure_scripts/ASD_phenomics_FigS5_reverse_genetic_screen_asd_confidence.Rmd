@@ -1,0 +1,95 @@
+---
+title: "Supplementary Figure Collection 5 -  Reverse genetic screens colored by ASD-association confidence."
+output:
+  html_document: default
+  pdf_document: default
+subtitle: version 1.0
+---
+
+```{r setup, include=FALSE}
+# Rmd-specific settings
+library(here)
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = here::here() )
+
+options(width = 1920)
+
+```
+
+All plots illustrate the sample mean distance of each genotype group from wild-type. Individual genotype groups are colored by the current evidence for ASD-association of the corresponding gene according to Satterstrom et al. (2019) (see main text for citation). The Satterstrom et al. categories denote evidence for ASD-association from strongest to weakest: FWER ≤ 0.05, FDR ≤ 0.05, FDR ≤ 0.1, None (no categorization). Strains outside the 95% confidence interval of the wild-type distribution are labeled. Only a maximum of five strains are labeled in each direction per feature to prevent over plotting. Several parameters of the plots can be modified by altering the parameters in the code below. 
+
+```{r set-parameters, echo=TRUE}
+## Configure your parameters here
+
+NSEEDS=1 # Number of different version of the label repelling 
+showLabels=TRUE # Whether to show the labels or not
+repulsion=30 # How strong the repulsion of labels are. We've used 30 and 50.
+strainsPerSides=5 # To control overplotting, we're limiting the number of labels shown to maximum 10 on each side of the wild-type.
+```
+
+
+```{r init, include=FALSE, echo=FALSE}
+# Import and Load
+source("preprocessing_scripts/utils.R")
+
+wormData.plate.feature.mtrx <- readMatrix(paste0( config::get("data"), "/wormData.plate.feature.mtrx") )
+wormData.feature.mtrx.corrected <- (wormData.plate.feature.mtrx)
+isWT <- grepl("^N2", cleanAlleleNames(wormData.feature.mtrx.corrected))
+wormData.feature.sc.mtrx.corrected <- scaleCols(wormData.feature.mtrx.corrected)
+
+# Obtain feature groups
+features.reversals <- colnames(readObjectAsMatrix("reversals"))
+features.morphological <- setdiff( colnames(wormData.feature.sc.mtrx.corrected), features.reversals )
+
+# Split corrected dataset.
+reversals <- wormData.feature.sc.mtrx.corrected[, features.reversals]
+morphological <- wormData.feature.sc.mtrx.corrected[, features.morphological]
+
+## Load t-test analysis data
+t.stat <- readObjectAsMatrix("t.stat") #[alleles,]
+t.pval <- readObjectAsMatrix("t.pval") #[alleles,]
+t.mean <- readObjectAsMatrix("t.mean") #[alleles,]
+CI95.lo <- readObjectAsMatrix("CI95.lo") #[alleles,]
+CI95.hi <- readObjectAsMatrix("CI95.hi") #[alleles,]
+
+
+
+SP_THEME=theme(axis.title.x = element_text(size = 25),
+               axis.title.y = element_text(size = 25),
+               axis.text.y.left =  element_text(size = 25),
+               legend.text=element_text(size=16), legend.title = element_text(size=19))
+```
+
+
+## Gene by phenotype effect.
+```{r render-striplots-rep30, echo=FALSE, fig.width=14, fig.height=10, warning=FALSE}
+
+if ( !all( c(rownames(CI95.hi) == rownames(CI95.lo), rownames(CI95.hi) == rownames(t.stat)) ) ){
+    stop("[ERROR] Incorrect t.stat/CI rows")
+  }
+
+
+for (feature in c(colnames(reversals), colnames(morphological))) {
+  for (i in 1:NSEEDS){
+  # for (i in 1:1){
+   p = phenotypePlotByMean(
+      X = t.mean,
+      confidence.hi = CI95.hi,
+      confidence.lo = CI95.lo,
+      pvalues=t.pval,
+      metric=feature,
+      limitOutlier = strainsPerSides,
+      seed = i,
+      repulsion = 30,
+      showLabels=showLabels,
+      useClass = "asd_confidence"
+  ) + SP_THEME
+
+   print(p)
+
+  }
+}
+
+
+```
+
