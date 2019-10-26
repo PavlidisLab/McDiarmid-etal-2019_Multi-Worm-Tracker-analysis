@@ -87,7 +87,7 @@ cluster <-
   rbind(cluster, data.frame(group = c("Wildtype"), gene = c("N2")))
 
 
-set.seed(config::get("tsne")$seed2D)
+set.seed(as.numeric(config::get("tsne")$seed2D))
 THETA <- config::get("tsne")$theta
 PERPLEXITY <- config::get("tsne")$perplexity
 PCA = as.logical(config::get("tsne")$pca)
@@ -186,7 +186,7 @@ p <- ggplot(tsne_Y.ASD) +
     axis.ticks.y = element_blank()
   ) +
   labs(
-    title = paste("t-SNE of t-test values for", cluster.string, "genes") ,
+    title = paste("t-SNE of t-statistics") ,
     subtitle = "",
     x = "x",
     y = "y"

@@ -1,12 +1,15 @@
 ---
-title: "Supplementary Figure Collection 3 - Phenomic Heatmaps (Only 2nd allele or outcrossed strains)."
+title: "Supplementary Figure Collection 4 - Multiple Independent Allele Confirmation Phenomic Heatmaps."
 output:
   html_document: default
   pdf_document: default
 subtitle: version 1.0
 ---
 
-Phenomic heat maps summarizing the phenotypic profiles of 87 strains harbouring a mutation in an ortholog of an ASD-associated gene. Cells represent directional t-statistics from comparisons to wild-type controls. T-statistics are shown unclipped and at various clippings (t clipped at ±10, ±20, etc.).  On select indicated heat maps, only cells significant at FDR < 0.1 are colored for ease of interpretation. The heat maps are interactive allowing for more detailed inspection of selected observations. Absolute t-statics values are clipped at 3.0, 10.0 and 20.0 in the last three figures.
+
+version 1.0
+
+Phenomic heat maps summarizing the phenotypic profiles of strains harbouring multiple independent mutations in an ortholog of an ASD-associated gene. Cells represent directional t-statistics from comparisons to wild-type controls. T-statistics are shown unclipped and at various clippings (t clipped at ±10, ±20, etc.). On select indicated heat maps, only cells significant at FDR < 0.1 and with directionally selective genotype-phenotype relationships observed in both strains are colored for ease of interpretation. The heat maps are interactive allowing for more detailed inspection of selected observations. Absolute t-statistics values are clipped at 3.0, 10.0 and 20.0 in the last three figures.
 
 
 ```{r setup, include=FALSE}
@@ -20,48 +23,72 @@ options(width = 1920)
 ```
 
 
-
 ```{r init, include=FALSE, echo=FALSE}
 # Import and Load
 source("preprocessing_scripts/utils.R")
 
 t.stat <- readObjectAsMatrix("t.stat")
+t.stat = t.stat[order(rownames(t.stat), decreasing = T),]
 t.pval <- readObjectAsMatrix("t.pval")
+t.pval = t.pval[order(rownames(t.pval), decreasing = T),]
+
 t.stat.masked = mask.by.pvalues(t.stat, mask = t.pval, use.fdr = T)
-OC_2nd.allele = read.table(("user_defined_feature_labels_and_categories/2nd_allele_OC_Strain_genotype_labels_0816_2019.txt"))
+OC_2nd.allele = read.table(config::get("2nd-alleles"))
 t.stat = t.stat[translate(rownames(t.stat.masked)) %in% OC_2nd.allele$V1,]
 t.stat.masked = t.stat.masked[translate(rownames(t.stat.masked)) %in% OC_2nd.allele$V1,]
 
+## Special case where we only look where a feature's significant between all alleles of the same gene
+t.stat.masked.onlysig = t.stat.masked
+t.stat.masked.onlysig.samedir = t.stat.masked
+
+gene_vector = gsub(as.character(rownames(t.stat.masked.onlysig)), pattern = ".*(\\(.*\\)).*", replacement = "\\1")
+#gene_vector = gsub(as.character(rownames(t.stat.masked.onlysig)), pattern = "\\(.*", replacement = "")
+for (gene in unique(gene_vector)){
+  print(gene)
+  ns_feature = apply(t.stat.masked.onlysig[gene_vector == gene, ] == 0,
+                     MARGIN = 2,
+                     FUN = any) # TRUE means at least one was not significant.
+  samedir_feature = apply(t.stat.masked.onlysig[gene_vector == gene, ] > 0,
+                     MARGIN = 2,
+                     FUN = function(column){
+                          return( sum(column) ==  length(column) || sum(column) == 0)
+                       } ) # TRUE means at least one was not significant.
+  
+  t.stat.masked.onlysig[gene_vector == gene, ns_feature] <- 0.0
+  t.stat.masked.onlysig.samedir[gene_vector == gene, ns_feature | !samedir_feature ] <- 0.0
+}
+
+
 ```
 
-## Heatmaps 
 
-```{r render-hm, echo=FALSE, fig.width=16, fig.height=21}
-iheatmapper( t.stat,
-             titleName= "T-test for Features (Raw)",
-             valuesNames = "T-statistic",
-             useGroups = NULL)
+### Heatmaps
 
-iheatmapper( t.stat.masked,
+```{r render-hm-onlysignif-samedir, echo=FALSE, fig.width=16, fig.height=21}
+iheatmapper( t.stat.masked.onlysig.samedir,
              titleName= "T-test for Features (FDR < 0.1)",
-             valuesNames = "T-statistic",
-             useGroups = NULL)
+             valuesNames = "t-statistic",
+             useGroups = NULL,
+             useClustering = "columns")
 
-t.stat.clipped3 <- fence.matrix(t.stat.masked, UB = 3, LB = -3, removeWT = T)
+t.stat.clipped3 <- fence.matrix(t.stat.masked.onlysig.samedir, UB = 3, LB = -3, removeWT = T)
 iheatmapper( t.stat.clipped3,
              titleName= "T-test for Features (FDR < 0.1, |t| < 3.0 )",
-             valuesNames = "T-statistic",
-             useGroups = NULL)
+             valuesNames = "t-statistic",
+             useGroups = NULL,
+             useClustering = "columns")
 
-t.stat.clipped10 <- fence.matrix(t.stat.masked, UB = 10, LB = -10, removeWT = T)
+t.stat.clipped10 <- fence.matrix(t.stat.masked.onlysig.samedir, UB = 10, LB = -10, removeWT = T)
 iheatmapper( t.stat.clipped10,
              titleName= "T-test for Features (FDR < 0.1, |t| < 10.0 )",
-             valuesNames = "T-statistic",
-             useGroups = NULL)
+             valuesNames = "t-statistic",
+             useGroups = NULL,
+             useClustering = "columns")
 
-t.stat.clipped20 <- fence.matrix(t.stat.masked, UB = 20, LB = -20, removeWT = T)
+t.stat.clipped20 <- fence.matrix(t.stat.masked.onlysig.samedir, UB = 20, LB = -20, removeWT = T)
 iheatmapper( t.stat.clipped20,
              titleName= "T-test for Features (FDR < 0.1, |t| < 20.0 )",
-             valuesNames = "T-statistic",
-             useGroups = NULL)
+             valuesNames = "t-statistic",
+             useGroups = NULL,
+             useClustering = "columns")
 ```

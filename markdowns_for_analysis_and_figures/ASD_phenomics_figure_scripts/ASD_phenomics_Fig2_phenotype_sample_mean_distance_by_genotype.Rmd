@@ -24,7 +24,7 @@ All plots illustrate the sample mean distance of each genotype group from wild-t
 NSEEDS=1 # Number of different version of the label repelling 
 showLables=F # Whether to show the labels or not
 repulsion=30 # How strong the repulsion of labels are. We've used 30 and 50.
-strainsPerSides=10 # To control overplotting, we're limiting the number of labels shown to maximum 10 on each side of the wild-type.
+strainsPerSides=5 # To control overplotting, we're limiting the number of labels shown to maximum 10 on each side of the wild-type.
 ```
 
 

@@ -1,12 +1,12 @@
 ---
-title: "Supplementary Figure Collection 3 - Phenotypic Profiles"
+title: "Supplementary Figure Collection 2 - Phenotypic Profiles"
 output:
   html_document: default
   pdf_document: default
 subtitle: version 1.0
 ---
 
-For all plots bars represent directional t-statistics from an unpaired t-test comparing the indicated mutant to wild-type for each phenotypic feature listed across the x-axis. Color coding reflects feature classification.
+For all plots bars represent directional t-statistics from an unpaired t-test comparing the indicated mutant to wild-type for each phenotypic feature listed across the x-axis. Color coding reflects feature classification. The t-statistics are clipped at ±20.
 
 ```{r setup, include=FALSE}
 # Rmd-specific settings

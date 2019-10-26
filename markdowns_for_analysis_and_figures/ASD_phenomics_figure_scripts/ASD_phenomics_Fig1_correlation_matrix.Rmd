@@ -42,7 +42,6 @@ rownames(feature.class.df) <- feature.class$Feature
 
 ### N2 replicates only
 ```{r render-N2-corrmatrices, echo=FALSE, fig.width=12, fig.height=9}
-
 correlationHeatmap(t.correlation.N2, title = "Feature correlation (N2 replicates)")
 ```
 

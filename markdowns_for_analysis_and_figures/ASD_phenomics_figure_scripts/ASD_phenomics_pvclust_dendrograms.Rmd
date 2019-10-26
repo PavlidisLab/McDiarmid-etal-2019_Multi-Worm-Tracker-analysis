@@ -1,12 +1,12 @@
 ---
-title: "Supplementary Figure Collection 4 - Pvclust Dendrograms"
+title: "Supplementary Figure Collection 7 - Pvclust dendrograms"
 output:
   html_document: default
   pdf_document: default
 subtitle: version 1.0
 ---
 
-Dendrograms depict hierarchical clustering of strains based on similarity in their phenotypic profiles.  The Student's T-statistic was used as a numerical score to represent the difference between wild-type and mutant animals for each phenotypic feature; this created a numerical profile of phenotypic features for further analysis. Average-linkage hierarchical clustering was performed with pvclust using correlation as the distance measure, and 50,000 rounds of bootstrapping. Clustering was performed on all features as well as the morphology features only and sensory and learning features only. 
+Dendrograms depict hierarchical clustering of strains based on similarity in their phenotypic profiles. The t-statistics were used as a numerical score to represent the difference between wild-type and mutant animals for each phenotypic feature; this created a numerical profile of phenotypic features for further analysis. Average-linkage hierarchical clustering was performed with pvclust using correlation as the distance measure, and 50,000 rounds of bootstrapping. Clustering was performed on all features as well as the morphology features only and sensory and learning features only.
 
 
 ```{r setup, include=FALSE}

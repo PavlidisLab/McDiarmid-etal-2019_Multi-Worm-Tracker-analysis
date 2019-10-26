@@ -6,7 +6,7 @@ output:
 subtitle: version 1.0
 ---
 
-Phenomic heat maps summarizing the phenotypic profiles of 87 strains harbouring a mutation in an ortholog of an ASD-associated gene. Cells represent directional t-statistics from comparisons to wild-type controls. T-statistics are shown unclipped and at various clippings (t clipped at ±10, ±20, etc.).  On select indicated heat maps, only cells significant at FDR < 0.1 are colored for ease of interpretation. The heat maps are interactive allowing for more detailed inspection of selected observations. Absolute t-statics values are clipped at 3.0, 10.0 and 20.0 in the last three figures.
+Phenomic heat maps summarizing the phenotypic profiles of 135 strains harbouring a mutation in an ortholog of an ASD-associated gene. Cells represent directional t-statistics from comparisons to wild-type controls. The t-statistics are shown unclipped and at various clippings (t clipped at ±10, ±20, etc.).  On select indicated heat maps, only cells significant at FDR < 0.1 are colored for ease of interpretation. The heat maps are interactive allowing for more detailed inspection of selected observations. Absolute t-statistics values are clipped at 3.0, 10.0 and 20.0 in the last three figures.
 
 
 ```{r setup, include=FALSE}
@@ -36,29 +36,29 @@ t.stat.masked = mask.by.pvalues(t.stat, mask = t.pval, use.fdr = T)
 ```{r render-hm, echo=FALSE, fig.width=16, fig.height=21}
 iheatmapper( t.stat,
              titleName= "T-test for Features (Raw)",
-             valuesNames = "T-statistic",
+             valuesNames = "t-statistic",
              useGroups = NULL)
 
 iheatmapper( t.stat.masked,
              titleName= "T-test for Features (FDR < 0.1)",
-             valuesNames = "T-statistic",
+             valuesNames = "t-statistic",
              useGroups = NULL)
 
 t.stat.clipped3 <- fence.matrix(t.stat.masked, UB = 3, LB = -3, removeWT = T)
 iheatmapper( t.stat.clipped3,
              titleName= "T-test for Features (FDR < 0.1, |t| < 3.0 )",
-             valuesNames = "T-statistic",
+             valuesNames = "t-statistic",
              useGroups = NULL)
 
 t.stat.clipped10 <- fence.matrix(t.stat.masked, UB = 10, LB = -10, removeWT = T)
 iheatmapper( t.stat.clipped10,
              titleName= "T-test for Features (FDR < 0.1, |t| < 10.0 )",
-             valuesNames = "T-statistic",
+             valuesNames = "t-statistic",
              useGroups = NULL)
 
 t.stat.clipped20 <- fence.matrix(t.stat.masked, UB = 20, LB = -20, removeWT = T)
 iheatmapper( t.stat.clipped20,
              titleName= "T-test for Features (FDR < 0.1, |t| < 20.0 )",
-             valuesNames = "T-statistic",
+             valuesNames = "t-statistic",
              useGroups = NULL)
 ```
