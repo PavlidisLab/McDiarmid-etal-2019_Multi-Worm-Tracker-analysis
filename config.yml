@@ -7,11 +7,15 @@ default:
   'experiment.days': 'user_defined_feature_labels_and_categories/experiment.days.perPlate'
   'morphological-features': 'user_defined_feature_labels_and_categories/morphological_features.csv'
   'stimuli-features': 'user_defined_feature_labels_and_categories/stimuli_features.csv'
+  '2nd-alleles': "user_defined_feature_labels_and_categories/2nd_allele_OC_Strain_genotype_labels_0909_2019.txt"
   'data': 'processed_data/'
   'plots': 'plots/'
   'feature-subcategories': 'user_defined_feature_labels_and_categories/ASD_phenomics_feature_subcategories_0101_2019.tsv'
   'feature-subcategories-labels': 'user_defined_feature_labels_and_categories/ASD_phenomics_feature_labels_subcategories_0101_2019.tsv'
-  'strain-genotype-labels': 'user_defined_feature_labels_and_categories/Strain_genotype_labels_withSource_0109_2019.tsv'
+  'strain-genotype-labels': 'user_defined_feature_labels_and_categories/Strain_genotype_labels_withSource_0209_2019.tsv'
+  'asd-confidence-categories': 'user_defined_feature_labels_and_categories/SFARI_Satterstrom_Strain_genotype_labels_0915_2019.tsv'
+  'asd-categories-colors': 'user_defined_feature_labels_and_categories/ASD_categories_colors.csv'
+  'asd-confidence-colors': 'user_defined_feature_labels_and_categories/ASD_confidence_colors_19092019.csv'
   'clustering':
     'ncpu': 30
     'nboot': 50000
@@ -19,7 +23,7 @@ default:
     'seed': 0
     'plots': 'pvclust_plots/'
   'tsne':
-    'seed2D': 77
+    'seed2D': 119
     'seed3D': 85
     'theta': 0
     'perplexity': 20
@@ -108,4 +112,8 @@ default:
         - "habituationDuration"
         - "habituationSpeed"
         - "habituationDistance"
+        - "spontPb"
+        - "spontDuration"
+        - "spontSpeed"
+        - "spontDistance"
 
