@@ -20,6 +20,7 @@ isWT <- grepl("^N2", rownames(t.stat))
 t.stat <- t.stat[!isWT,] # Don't cluster on the WTs
 
 wormData.feature.mtrx <- t.stat
+rownames(wormData.feature.mtrx) <- translate(rownames(wormData.feature.mtrx))
 
 ################333
 # wormData.feature.mtrx[wormData.feature.mtrx > 50] <- 50
@@ -55,16 +56,14 @@ pv.genes.reversals <- pvclust(data = t(wormData.feature.mtrx.reversals),
                               parallel = COMPUTE
 )
 
-# worm.feature.mtrx.learning.nopb = t(wormData.feature.mtrx.learning[,setdiff(colnames(wormData.feature.mtrx.learning), colnames(wormData.feature.mtrx.learning)[grep(colnames(wormData.feature.mtrx.learning), pattern = "Pb$")])]) # Version without probabilities
+pv.genes.learning <- pvclust(data = t( wormData.feature.mtrx.learning), 
+                                        nboot = NBOOT,
+                                        iseed = SEED, 
+                                        parallel = COMPUTE )
 
-pv.genes.learning <- pvclust(data = t(wormData.feature.mtrx.learning), # TODO/FIXME: Is this correct? 
-                             nboot = NBOOT,  #r=1.0,
-                             iseed = SEED, 
-                             parallel = COMPUTE 
-)
 
 # Produce plots
-pvplot(pv.genes.all, breaks=c(CONFIDENCE), filename = "t.test.pvclust_all.png", HIGHLIGHT = days.melted) 
+pvplot(pv.genes.all, breaks=c(CONFIDENCE), filename = "t.test.pvclust_all.png", HIGHLIGHT = days.melted,) 
 pvplot(pv.genes.morpho, breaks=c(CONFIDENCE), filename = "t.test.pvclust_morpho.png", HIGHLIGHT = days.melted) 
 pvplot(pv.genes.reversals, breaks = c(CONFIDENCE), filename = "t.test.pvclust_reversals.png", HIGHLIGHT = days.melted) 
 pvplot(pv.genes.learning, breaks = c(CONFIDENCE), filename = "t.test.pvclust_learning.png", HIGHLIGHT = days.melted) 
@@ -96,7 +95,7 @@ all.clusters <- pvpick(x = pv.genes.all,
                        type="geq", 
                        max.only = MAX.ONLY)$clusters
 
-learning.clusters <- pvpick(x = pv.genes.learning, 
+learning.clusters <- pvpick(x = pv.genes.learning,  
                             alpha = CONFIDENCE, 
                             pv="au", 
                             type="geq", 
@@ -117,4 +116,5 @@ writeObject(reversal.clusters.df,filename = "t.test.reversal.clusters.df")
 writeObject(morpho.clusters.df, filename = "t.test.morpho.clusters.df" )
 writeObject(all.clusters.df, filename = "t.test.all.clusters.df")
 writeObject(learning.clusters.df, filename = "t.test.learning.clusters.df")
+
 
