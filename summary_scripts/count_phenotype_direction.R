@@ -1,6 +1,15 @@
 t.stat <- readObjectAsMatrix("t.stat") 
 t.pval <- readObjectAsMatrix("t.pval") 
 t.qval <- readObjectAsMatrix("t.qval") 
+dim(t.stat) 
+# Remove WTs
+
+t.stat <- t.stat[rownames(t.stat) %!in% config::get("constants")$wildtypes,]
+t.pval <- t.pval[rownames(t.pval) %!in% config::get("constants")$wildtypes,]
+t.qval <- t.qval[rownames(t.qval) %!in% config::get("constants")$wildtypes,]
+dim(t.stat) 
+
+
 
 t.direction.template <- t.stat
 t.direction.template[T] <- 0
@@ -73,3 +82,4 @@ t.direction.count.strain <- rbind(t.direction.count.strain, N2s) # Re-add N2s
 # View(t.direction.count.phenotype)
 writeObject(t.direction.count.strain)
 writeObject(t.direction.count.phenotype)
+
