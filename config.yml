@@ -1,8 +1,7 @@
 default:
   'datasets':
-    - 'datasets/worms_2017-04-25/'
-    - 'datasets/worms_2018-10-24/'
-    - 'datasets/worms_2019_08_15/'
+    - 'datasets/part1/'
+    - 'datasets/part2/'
   'experiment.days': 'user_defined_feature_labels_and_categories/experiment.days.perPlate'
   'morphological-features': 'user_defined_feature_labels_and_categories/morphological_features.csv'
   'stimuli-features': 'user_defined_feature_labels_and_categories/stimuli_features.csv'
