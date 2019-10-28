@@ -132,7 +132,7 @@ tsne_Y <-
 
 colourScheme <- getColoursForClass(as.vector(tsne_Y[, "group"]))
 colourScheme.unique <- unique(as.character(colourScheme))
-names(colourScheme.unique) <- levels(as.factor(tsne_Y[, "group"]))
+# names(colourScheme.unique) <- levels(as.factor(tsne_Y[, "group"]))
 
 colScale <-
   scale_colour_manual(name = "Cluster", values = colourScheme.unique)

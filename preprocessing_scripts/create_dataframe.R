@@ -17,7 +17,13 @@ stimuli_induced <- list.files(config::get("datasets"),
 stimuli_features <- c(c("plate", "line", "gene"), names(read.csv(config::get("stimuli-features"), header = T )))
 
 ## Check that a matching number of .dat and .rev files are loaded.
-if (!assertthat::are_equal(length(morphological), length(stimuli_induced))) { stop("[ERROR] Mismatch in the number of `.dat`/`.rev` files.") }
+if (!assertthat::are_equal(length(morphological), length(stimuli_induced))) {
+    print(".dat files:")
+    print(length(morphological))
+    print(".rev files:")
+    print(length(stimuli_induced))
+    stop("[ERROR] Mismatch in the number of `.dat`/`.rev` files.")
+}
 
 # IMPORTANT: Assuming the file names are structure as LINE/PLATE/FILE.{dat,rev}, as output by Choreography.
 plates <- sapply(strsplit(morphological, "/"), function(x) x[length(x) - 1])

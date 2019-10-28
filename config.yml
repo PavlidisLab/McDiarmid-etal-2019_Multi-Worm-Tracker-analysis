@@ -1,9 +1,8 @@
 default:
   'datasets':
-    - 'datasets/part1_dat/'
-    - 'datasets/part1_rev/'
-    - 'datasets/part2/'
-    - '/cosmos/data/project-data/mbelmadani_worm-phenomics-ASD/worms_2019_08_15/ASD_phenomics_data_revision_organized_by_gene_2/'
+    - 'datasets/worms_2017-04-25/'
+    - 'datasets/worms_2018-10-24/'
+    - 'datasets/worms_2019_08_15/'
   'experiment.days': 'user_defined_feature_labels_and_categories/experiment.days.perPlate'
   'morphological-features': 'user_defined_feature_labels_and_categories/morphological_features.csv'
   'stimuli-features': 'user_defined_feature_labels_and_categories/stimuli_features.csv'

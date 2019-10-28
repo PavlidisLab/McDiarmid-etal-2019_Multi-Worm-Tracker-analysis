@@ -105,7 +105,7 @@ row.names(tsne_Y.3d) <- row.names(t.stat)
 
 tsne_Y <- cbind(tsne_Y, genes = row.names(t.stat))
 tsne_Y <-
-  merge(tsne_Y,
+  merge(tsne_Y,
         cluster,
         by.x = "genes",
         by.y = "gene",
@@ -113,7 +113,7 @@ tsne_Y <-
 
 colourScheme <- getColoursForClass(as.vector(tsne_Y[, "group"]))
 colourScheme.unique <- unique(as.character(colourScheme))
-names(colourScheme.unique) <- levels(as.factor(tsne_Y[, "group"]))
+# names(colourScheme.unique) <- levels(as.factor(tsne_Y[, "group"]))
 
 colScale <-
   scale_colour_manual(name = "Cluster", values = colourScheme.unique)
