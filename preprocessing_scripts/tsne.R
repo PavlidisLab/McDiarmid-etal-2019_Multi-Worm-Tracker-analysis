@@ -105,7 +105,7 @@ row.names(tsne_Y.3d) <- row.names(t.stat)
 
 tsne_Y <- cbind(tsne_Y, genes = row.names(t.stat))
 tsne_Y <-
-  merge(tsne_Y,
+  merge(tsne_Y,
         cluster,
         by.x = "genes",
         by.y = "gene",
